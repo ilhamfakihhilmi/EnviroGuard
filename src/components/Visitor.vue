@@ -163,12 +163,12 @@ const stats = reactive({
 
 // Data master pengunjung (di aplikasi nyata, ini dari API)
 const allVisitors = reactive([
-    { id: 1, name: 'John Doe', company: 'PT. Tech Solutions', purpose: 'Maintenance Server', date: '2025-06-10', timeIn: '09:30', timeOut: '-', status: 'Active' },
-    { id: 2, name: 'Alice Smith', company: 'DataCorp Inc.', purpose: 'Audit Keamanan', date: '2025-06-10', timeIn: '-', timeOut: '-', status: 'Pending' },
-    { id: 3, name: 'Michael Brown', company: 'Network Systems', purpose: 'Instalasi Equipment', date: '2025-06-10', timeIn: '08:00', timeOut: '11:30', status: 'Completed' },
-    { id: 4, name: 'Sarah Johnson', company: 'Cloud Services Ltd.', purpose: 'Konsultasi Teknis', date: '2025-06-10', timeIn: '10:15', timeOut: '-', status: 'Active' },
-    { id: 5, name: 'Robert Wilson', company: 'Security Audit Co.', purpose: 'Pemeriksaan Rutin', date: '2025-06-10', timeIn: '-', timeOut: '-', status: 'Pending' },
-    { id: 6, name: 'Budi Santoso', company: 'Vendor AC', purpose: 'Perbaikan Pendingin', date: '2025-06-09', timeIn: '14:00', timeOut: '16:00', status: 'Completed' },
+    { id: 1, name: 'Ade Maulana', company: 'PT. Tech Solutions', purpose: 'Maintenance Server', date: '2025-06-10', timeIn: '09:30', timeOut: '-', status: 'Active' },
+    { id: 2, name: 'Azis mujib', company: 'DataCorp Inc.', purpose: 'Audit Keamanan', date: '2025-06-10', timeIn: '-', timeOut: '-', status: 'Pending' },
+    { id: 3, name: 'Isna Ardani', company: 'Network Systems', purpose: 'Instalasi Equipment', date: '2025-06-10', timeIn: '08:00', timeOut: '11:30', status: 'Completed' },
+    { id: 4, name: 'Kiki Nabil', company: 'Cloud Services Ltd.', purpose: 'Konsultasi Teknis', date: '2025-06-10', timeIn: '10:15', timeOut: '-', status: 'Active' },
+    { id: 5, name: 'Satrio Natik', company: 'Security Audit Co.', purpose: 'Pemeriksaan Rutin', date: '2025-06-10', timeIn: '-', timeOut: '-', status: 'Pending' },
+    { id: 6, name: 'Anam Wobowo', company: 'Vendor AC', purpose: 'Perbaikan Pendingin', date: '2025-06-09', timeIn: '14:00', timeOut: '16:00', status: 'Completed' },
 ]);
 
 let statUpdateInterval = null;
