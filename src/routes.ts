@@ -9,7 +9,6 @@ import Visitor from "./components/Visitor.vue";
 import Monitoring from "./components/Monitoring.vue";
 import Reports from "./components/Reports.vue";
 import MobileApp from "./components/MobileApp.vue";
-import RoiCalculator from "./components/RoiCalculator.vue";
 import Chatbot from "./components/Chatbot.vue";
 // import NotFound from "../views/NotFound.vue";
 
@@ -64,12 +63,6 @@ export const routes = [
     name: "MobileApp",
     component: MobileApp,
     meta: { title: "Aplikasi Mobile" },
-  },
-  {
-    path: "/roi",
-    name: "RoiCalculator",
-    component: RoiCalculator,
-    meta: { title: "ROI Calculator" },
   },
   {
     path: "/chatbot",
