@@ -3,38 +3,19 @@
         <nav class="nav">
             <a href="index.html">
                 <div>
-                    <img src="/src/assets/images/logo.jpeg" alt="Logo" style="width: 135px; height: auto;" />
+                    <img src="/src/assets/images/logo.jpeg" alt="Logo" style="width: 135px; height: auto" />
                 </div>
             </a>
             <div class="nav-links">
-                <router-link to="/dashboard" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
-                    Dashboard
-                </router-link>
-                <router-link to="/rack" class="nav-link">
-                    <i class="fas fa-server"></i>
-                    Rak Server
-                </router-link>
-                <router-link to="/asset" class="nav-link">
-                    <i class="fas fa-box"></i>
-                    Aset
-                </router-link>
-                <router-link to="/visitor" class="nav-link">
-                    <i class="fas fa-users"></i>
-                    Pengunjung
-                </router-link>
+                <router-link to="/dashboard" class="nav-link"> Dashboard </router-link>
+                <router-link to="/rack" class="nav-link"> Rak Server </router-link>
+                <router-link to="/asset" class="nav-link"> Aset </router-link>
+                <router-link to="/visitor" class="nav-link"> Pengunjung </router-link>
                 <router-link to="/monitoring" class="nav-link">
-                    <i class="fas fa-tv"></i>
                     Monitoring
                 </router-link>
-                <router-link to="/laporan" class="nav-link">
-                    <i class="fas fa-file-alt"></i>
-                    Laporan
-                </router-link>
-                <router-link to="/mobile" class="nav-link">
-                    <i class="fas fa-mobile-alt"></i>
-                    Mobile
-                </router-link>
+                <router-link to="/laporan" class="nav-link"> Laporan </router-link>
+                <router-link to="/mobile" class="nav-link"> Mobile </router-link>
             </div>
         </nav>
     </header>
@@ -43,8 +24,8 @@
         <div class="page-header">
             <h1 class="page-title">EnviroGuard Mobile</h1>
             <p class="page-subtitle">
-                Akses penuh ke sistem monitoring data center Anda dari mana saja, kapan saja.
-                Aplikasi mobile yang powerful dengan interface yang intuitif.
+                Akses penuh ke sistem monitoring data center Anda dari mana saja, kapan
+                saja. Aplikasi mobile yang powerful dengan interface yang intuitif.
             </p>
         </div>
 
@@ -52,21 +33,22 @@
             <div class="app-info">
                 <h2 class="app-title">Monitoring On-the-Go</h2>
                 <p class="app-description">
-                    Dengan aplikasi EnviroGuard Mobile, Anda dapat memantau kondisi data center secara real-time,
-                    menerima notifikasi penting, dan mengambil tindakan cepat dari perangkat mobile Anda.
+                    Dengan aplikasi EnviroGuard Mobile, Anda dapat memantau kondisi data
+                    center secara real-time, menerima notifikasi penting, dan mengambil
+                    tindakan cepat dari perangkat mobile Anda.
                 </p>
                 <div class="download-buttons">
                     <a href="#" class="download-btn primary" @click="downloadApp('ios')">
                         <i class="fab fa-apple download-icon"></i>
                         <div>
-                            <div style="font-size: 0.8rem; opacity: 0.8;">Download on the</div>
+                            <div style="font-size: 0.8rem; opacity: 0.8">Download on the</div>
                             <div>App Store</div>
                         </div>
                     </a>
                     <a href="#" class="download-btn" @click="downloadApp('android')">
                         <i class="fab fa-google-play download-icon"></i>
                         <div>
-                            <div style="font-size: 0.8rem; opacity: 0.8;">Get it on</div>
+                            <div style="font-size: 0.8rem; opacity: 0.8">Get it on</div>
                             <div>Google Play</div>
                         </div>
                     </a>
@@ -78,11 +60,15 @@
                         <div class="screen-content">
                             <div class="app-header">
                                 <div class="app-logo">EnviroGuard</div>
-                                <div class="notification-badge" :class="{ 'pulsing': notificationPulse }">3</div>
+                                <div class="notification-badge" :class="{ pulsing: notificationPulse }">
+                                    3
+                                </div>
                             </div>
                             <div class="dashboard-cards">
                                 <div class="mini-card">
-                                    <div class="mini-card-value">{{ mockupData.temperature }}°C</div>
+                                    <div class="mini-card-value">
+                                        {{ mockupData.temperature }}°C
+                                    </div>
                                     <div class="mini-card-label">Temperature</div>
                                 </div>
                                 <div class="mini-card">
@@ -126,7 +112,6 @@
             </div>
         </div>
 
-
         <div class="screenshots">
             <h2 class="screenshots-title">App Screenshots</h2>
             <p class="screenshots-subtitle">
@@ -136,7 +121,7 @@
                 <div v-for="screenshot in screenshots" :key="screenshot.label" class="screenshot-item">
                     <div class="phone-mockup static">
                         <div class="phone-frame">
-                            <div class="phone-screen">
+                            <div :class="screenshot.screenClass">
                                 <div class="screen-content">
                                     <div class="app-header">
                                         <div class="app-logo">EnviroGuard</div>
@@ -167,16 +152,6 @@
                                             <div class="action-item">Check Alerts</div>
                                         </div>
                                     </div>
-                                    <!-- <div class="app-nav">
-                                        <div class="app-nav-item"
-                                            :class="{ 'active': screenshot.label === 'Dashboard' }">Dashboard</div>
-                                        <div class="app-nav-item"
-                                            :class="{ 'active': screenshot.label === 'Monitoring' }">Monitoring</div>
-                                        <div class="app-nav-item" :class="{ 'active': screenshot.label === 'Alerts' }">
-                                            Alerts</div>
-                                        <div class="app-nav-item" :class="{ 'active': screenshot.label === 'Reports' }">
-                                            Reports</div>
-                                    </div> -->
                                 </div>
                             </div>
                         </div>
@@ -186,23 +161,22 @@
             </div>
         </div>
 
-
         <div class="qr-section">
             <h2 class="qr-title">Download Sekarang</h2>
             <p class="qr-subtitle">
-                Scan QR code di bawah ini untuk mengunduh aplikasi langsung ke perangkat Anda
+                Scan QR code di bawah ini untuk mengunduh aplikasi langsung ke perangkat
+                Anda
             </p>
             <div class="qr-code">
                 <img src="/src/assets/images/qr-code.jpg" alt="QR Code untuk download aplikasi"
-                    style="width:100%; height:100%; border-radius: 12px;">
+                    style="width: 100%; height: 100%; border-radius: 12px" />
             </div>
         </div>
-
     </main>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, onUnmounted } from 'vue';
+import { ref, reactive, onMounted, onUnmounted } from "vue";
 
 // --- Reactive State ---
 
@@ -214,17 +188,42 @@ const mockupData = reactive({
 });
 
 const features = reactive([
-    { title: 'Real-time Monitoring', description: 'Pantau kondisi data center secara real-time dengan update otomatis setiap detik. Dapatkan informasi terkini tentang suhu, kelembaban, dan performa sistem.', icon: 'fas fa-mobile-alt', color: '' },
-    { title: 'Smart Notifications', description: 'Terima notifikasi push untuk alert penting, maintenance schedule, dan anomali sistem. Kustomisasi pengaturan notifikasi sesuai kebutuhan Anda.', icon: 'fas fa-bell', color: 'secondary' },
-    { title: 'Interactive Charts', description: 'Visualisasi data dengan grafik interaktif yang responsif. Analisis trend dan pattern dengan mudah melalui interface yang user-friendly.', icon: 'fas fa-chart-bar', color: 'accent' },
-    { title: 'Secure Access', description: 'Keamanan tingkat enterprise dengan enkripsi end-to-end, biometric authentication, dan multi-factor authentication untuk melindungi data sensitif.', icon: 'fas fa-shield-alt', color: 'warning' },
+    {
+        title: "Real-time Monitoring",
+        description:
+            "Pantau kondisi data center secara real-time dengan update otomatis setiap detik. Dapatkan informasi terkini tentang suhu, kelembaban, dan performa sistem.",
+        icon: "fas fa-mobile-alt",
+        color: "",
+    },
+    {
+        title: "Smart Notifications",
+        description:
+            "Terima notifikasi push untuk alert penting, maintenance schedule, dan anomali sistem. Kustomisasi pengaturan notifikasi sesuai kebutuhan Anda.",
+        icon: "fas fa-bell",
+        color: "secondary",
+    },
+    {
+        title: "Interactive Charts",
+        description:
+            "Visualisasi data dengan grafik interaktif yang responsif. Analisis trend dan pattern dengan mudah melalui interface yang user-friendly.",
+        icon: "fas fa-chart-bar",
+        color: "accent",
+    },
+    {
+        title: "Secure Access",
+        description:
+            "Keamanan tingkat enterprise dengan enkripsi end-to-end, biometric authentication, dan multi-factor authentication untuk melindungi data sensitif.",
+        icon: "fas fa-shield-alt",
+        color: "warning",
+    },
 ]);
 
+// DIUBAH: Menambahkan properti `screenClass` pada setiap objek screenshot
 const screenshots = reactive([
-    { label: 'Dashboard', image: '/src/assets/images/demoApp.png' },
-    { label: 'Monitoring', image: '/src/assets/images/demoApp.png' },
-    { label: 'Alerts', image: '/src/assets/images/demoApp.png' },
-    { label: 'Reports', image: '/src/assets/images/demoApp.png' },
+    { label: "Dashboard", image: "/src/assets/images/demoApp.png", screenClass: "phone-screen" },
+    { label: "Monitoring", image: "/src/assets/images/demoApp.png", screenClass: "phone-screen2" },
+    { label: "Alerts", image: "/src/assets/images/demoApp.png", screenClass: "phone-screen3" },
+    { label: "Reports", image: "/src/assets/images/demoApp.png", screenClass: "phone-screen4" },
 ]);
 
 const notificationPulse = ref(false);
@@ -234,10 +233,14 @@ let notificationInterval = null;
 // --- Methods ---
 
 function downloadApp(platform) {
-    if (platform === 'ios') {
-        alert('Mengarahkan ke App Store...\n\nAplikasi akan segera tersedia di App Store.');
-    } else if (platform === 'android') {
-        alert('Mengarahkan ke Google Play Store...\n\nAplikasi akan segera tersedia di Google Play Store.');
+    if (platform === "ios") {
+        alert(
+            "Mengarahkan ke App Store...\n\nAplikasi akan segera tersedia di App Store."
+        );
+    } else if (platform === "android") {
+        alert(
+            "Mengarahkan ke Google Play Store...\n\nAplikasi akan segera tersedia di Google Play Store."
+        );
     }
 }
 
@@ -266,7 +269,6 @@ onUnmounted(() => {
     clearInterval(mockupInterval);
     clearInterval(notificationInterval);
 });
-
 </script>
 
 <style scoped>
@@ -300,7 +302,8 @@ onUnmounted(() => {
 }
 
 :global(body) {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        sans-serif;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     min-height: 100vh;
     color: var(--dark);
@@ -436,71 +439,70 @@ onUnmounted(() => {
 }
 
 .phone-mockup {
-
     position: relative;
-
     max-width: 300px;
-
     margin: 0 auto;
-
     animation: float 4s ease-in-out infinite;
-
 }
 
-
+.phone-mockup.static {
+    animation: none;
+}
 
 .phone-frame {
-
     width: 300px;
-
     height: 600px;
-
     background: var(--dark);
-
     border-radius: 40px;
-
     padding: 15px;
-
     box-shadow: var(--shadow-hover);
-
     position: relative;
-
     border: 5px solid #333;
-
 }
 
-
-
+/* KELAS-KELAS INI SEKARANG DIGUNAKAN UNTUK SCREENSHOTS */
 .phone-screen {
-
     width: 100%;
-
     height: 100%;
-
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-
     border-radius: 25px;
-
     position: relative;
-
     overflow: hidden;
-
 }
 
+.phone-screen2 {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #ff9a8b 0%, #ff6a88 100%);
+    border-radius: 25px;
+    position: relative;
+    overflow: hidden;
+}
 
+.phone-screen3 {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #2eefd0 0%, #1a92a7 100%);
+    border-radius: 25px;
+    position: relative;
+    overflow: hidden;
+}
+
+.phone-screen4 {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #96e6a1 0%, #297a39 100%);
+    border-radius: 25px;
+    position: relative;
+    overflow: hidden;
+}
 
 .screen-content {
-
     padding: 1.5rem;
-
     color: white;
-
     height: 100%;
-
     display: flex;
-
     flex-direction: column;
-
 }
 
 .app-header {
@@ -526,7 +528,7 @@ onUnmounted(() => {
     justify-content: center;
     font-size: 0.8rem;
     font-weight: 600;
-    border: 2px solid #5a6390;
+    border: 2px solid rgba(255, 255, 255, 0.2);
     transition: transform 0.2s ease-out;
 }
 
@@ -562,7 +564,6 @@ onUnmounted(() => {
 
 .quick-actions {
     flex-grow: 1;
-    /* Pushes nav to bottom */
 }
 
 .action-title {
@@ -583,32 +584,6 @@ onUnmounted(() => {
     border-radius: 8px;
     font-size: 0.9rem;
 }
-
-/* Phone Mockup Bottom Nav - Added for screenshots */
-.app-nav {
-    display: flex;
-    justify-content: space-around;
-    background: rgba(0, 0, 0, 0.3);
-    margin: 1.5rem -1.2rem -1rem;
-    /* Extend to screen edges */
-    padding: 0.5rem 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    flex-shrink: 0;
-}
-
-.app-nav-item {
-    font-size: 0.8rem;
-    padding: 0.5rem;
-    border-radius: 8px;
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.app-nav-item.active {
-    background: rgba(0, 0, 0, 0.4);
-    color: white;
-    font-weight: 600;
-}
-
 
 /* Features Grid */
 .features-grid {

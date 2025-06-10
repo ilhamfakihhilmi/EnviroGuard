@@ -8,37 +8,26 @@
             </a>
             <div class="nav-links">
                 <router-link to="/dashboard" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
                     Dashboard
                 </router-link>
                 <router-link to="/rack" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
                     Rak Server
                 </router-link>
                 <router-link to="/asset" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
                     Aset
                 </router-link>
                 <router-link to="/visitor" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
                     Pengunjung
                 </router-link>
                 <router-link to="/monitoring" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
                     Monitoring
                 </router-link>
                 <router-link to="/laporan" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
                     Laporan
                 </router-link>
                 <router-link to="/mobile" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
                     Mobile
                 </router-link>
-                <!-- <router-link to="/roi" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
-                    Roi
-                </router-link> -->
             </div>
         </nav>
     </header>
@@ -110,15 +99,12 @@
                     <div class="chart-controls">
                         <button v-for="timespan in chartTimespans" :key="timespan"
                             :class="['chart-btn', { active: activeTimespan === timespan }]"
-                            @click="activeTimespan = timespan">
+                            @click="updateChartData(timespan)">
                             {{ timespan }}
                         </button>
                     </div>
                 </div>
-                <div class="chart-placeholder">
-                    <i class="fas fa-chart-line" style="font-size: 3rem; margin-right: 1rem;"></i>
-                    Grafik Konsumsi Daya Real-time ({{ activeTimespan }})
-                </div>
+                <Line v-if="chartData.datasets.length > 0" :data="chartData" :options="chartOptions" />
             </div>
 
             <div class="system-stats">
@@ -133,7 +119,32 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
+import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue';
+// --- Impor untuk Chart.js ---
+import { Line } from 'vue-chartjs';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+    Filler
+} from 'chart.js';
+
+// --- Pendaftaran Komponen Chart.js ---
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+    Filler
+);
 
 // --- State Reaktif (Data Mentah) ---
 
@@ -166,10 +177,60 @@ const chartTimespans = ['1H', '6H', '24H', '7D'];
 const activeTimespan = ref('1H');
 let updateInterval = null;
 
+// --- State untuk Chart ---
+const chartData = ref({
+    labels: [],
+    datasets: []
+});
 
-// --- Computed Properties (Data yang diturunkan/diproses dari state mentah) ---
+const chartOptions = ref({
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+        y: {
+            beginAtZero: false,
+            grid: {
+                color: 'rgba(0, 0, 0, 0.05)',
+            },
+            ticks: {
+                callback: function (value) {
+                    return value + ' kW';
+                }
+            }
+        },
+        x: {
+            grid: {
+                display: false,
+            }
+        }
+    },
+    plugins: {
+        legend: {
+            display: false,
+        },
+        tooltip: {
+            mode: 'index',
+            intersect: false,
+            backgroundColor: '#202124',
+            titleFont: { size: 14, weight: 'bold' },
+            bodyFont: { size: 12 },
+            padding: 12,
+            cornerRadius: 8,
+        }
+    },
+    interaction: {
+        mode: 'index',
+        intersect: false,
+    },
+    elements: {
+        line: {
+            tension: 0.4, // membuat garis lebih halus
+        }
+    }
+});
 
-// Fungsi helper untuk menentukan status berdasarkan nilai
+// --- Computed Properties ---
+
 function getStatusInfo(type, value) {
     let status = { text: 'Normal', badgeClass: 'status-normal', cardClass: 'success' };
     switch (type) {
@@ -198,7 +259,6 @@ function getStatusInfo(type, value) {
     return status;
 }
 
-// Computed property yang memproses data mentah untuk ditampilkan di view
 const processedMetrics = computed(() => {
     return Object.entries(metrics).map(([key, metric]) => {
         return {
@@ -211,20 +271,17 @@ const processedMetrics = computed(() => {
 
 const activeAlerts = computed(() => {
     return alerts.filter(alert => {
-        if (!alert.metric) return true; // Untuk alert yang tidak terkait metrik
+        if (!alert.metric) return true;
         const metric = metrics[alert.metric];
         if (!metric) return false;
-
-        // Cek jika metrik terkait melewati threshold
         if (alert.metric === 'cpu' && metric.value > alert.threshold) return true;
         if (alert.metric === 'humidity' && metric.value > alert.threshold) return true;
-
         return false;
     });
 });
 
 
-// --- Metode (Aksi yang bisa dipicu) ---
+// --- Metode ---
 
 function updateMonitoringData() {
     metrics.temperature.value = 20 + Math.random() * 5;
@@ -239,11 +296,63 @@ function handleAlert(alert) {
     alert(`Menangani alert: "${alert.message}"`);
 }
 
+// --- Metode untuk Chart ---
+function generateChartData(timespan) {
+    let labels = [];
+    let data = [];
+    let count = 0;
+    let unit = 'menit';
 
-// --- Lifecycle Hooks (Kode yang berjalan pada siklus hidup komponen) ---
+    switch (timespan) {
+        case '1H': count = 12; unit = 'menit'; break;
+        case '6H': count = 12; unit = 'jam'; break;
+        case '24H': count = 24; unit = 'jam'; break;
+        case '7D': count = 7; unit = 'hari'; break;
+    }
+
+    for (let i = 0; i < count; i++) {
+        if (timespan === '1H') labels.push(`${i * 5}m`);
+        else if (timespan === '6H') labels.push(`${i * 30}m`);
+        else if (timespan === '24H') labels.push(`${i}:00`);
+        else if (timespan === '7D') labels.push(`Hari ${i + 1}`);
+
+        data.push((Math.random() * 3 + 7).toFixed(1)); // Konsumsi daya antara 7.0 - 10.0 kW
+    }
+
+    return { labels, data };
+}
+
+function updateChartData(timespan) {
+    activeTimespan.value = timespan;
+    const { labels, data } = generateChartData(timespan);
+
+    chartData.value = {
+        labels,
+        datasets: [
+            {
+                label: 'Konsumsi Daya (kW)',
+                backgroundColor: 'rgba(26, 115, 232, 0.1)',
+                borderColor: '#1a73e8',
+                borderWidth: 3,
+                pointBackgroundColor: '#1a73e8',
+                pointHoverBackgroundColor: '#ffffff',
+                pointHoverBorderColor: '#1a73e8',
+                pointRadius: 4,
+                pointHoverRadius: 8,
+                fill: true,
+                data: data
+            }
+        ]
+    };
+}
+
+
+// --- Lifecycle Hooks ---
 
 onMounted(() => {
     updateInterval = setInterval(updateMonitoringData, 3000);
+    // Inisialisasi chart saat komponen dimuat
+    updateChartData(activeTimespan.value);
 });
 
 onUnmounted(() => {
@@ -688,6 +797,14 @@ onUnmounted(() => {
     box-shadow: var(--shadow);
 }
 
+/* -- Gaya untuk Kontainer Chart -- */
+.overview-chart {
+    height: 400px;
+    /* Memberi tinggi eksplisit untuk kanvas chart */
+    display: flex;
+    flex-direction: column;
+}
+
 .chart-header {
     display: flex;
     justify-content: space-between;
@@ -723,17 +840,6 @@ onUnmounted(() => {
     background: var(--primary);
     color: white;
     border-color: var(--primary);
-}
-
-.chart-placeholder {
-    height: 300px;
-    background: var(--light-gray);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--gray);
-    font-size: 1.1rem;
 }
 
 .stats-title {

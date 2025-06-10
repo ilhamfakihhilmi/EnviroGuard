@@ -8,37 +8,33 @@
             </a>
             <div class="nav-links">
                 <router-link to="/dashboard" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
+
                     Dashboard
                 </router-link>
                 <router-link to="/rack" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
+
                     Rak Server
                 </router-link>
                 <router-link to="/asset" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
+
                     Aset
                 </router-link>
                 <router-link to="/visitor" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
+
                     Pengunjung
                 </router-link>
                 <router-link to="/monitoring" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
+
                     Monitoring
                 </router-link>
                 <router-link to="/laporan" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
+
                     Laporan
                 </router-link>
                 <router-link to="/mobile" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
+
                     Mobile
                 </router-link>
-                <!-- <router-link to="/roi" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
-                    Roi
-                </router-link> -->
             </div>
         </nav>
     </header>

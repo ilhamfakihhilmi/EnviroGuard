@@ -1,11 +1,10 @@
 <template>
   <header class="header">
     <nav class="nav">
-      <router-link to="/" class="logo">
-        <div class="logo-icon">
-          <i class="fas fa-shield-alt"></i>
+      <router-link to="/">
+        <div>
+          <img src="/src/assets/images/logo.jpeg" alt="Logo" style="width: 135px; height: auto;" />
         </div>
-        EnviroGuard
       </router-link>
     </nav>
   </header>
@@ -164,6 +163,8 @@
 </template>
 
 <script setup>
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
 import { onMounted } from 'vue';
 
 // onMounted adalah hook yang akan dijalankan setelah komponen di-render
@@ -224,15 +225,13 @@ onMounted(() => {
   box-sizing: border-box;
 }
 
-:global(body) {
+/* TIPS: Gaya untuk body sebaiknya diletakkan di file CSS global atau di App.vue */
+body {
   font-family: 'Inter', sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  overflow: hidden;
+  background-color: var(--light-gray);
+  /* Latar belakang dasar */
+  /* Hapus overflow: hidden agar halaman bisa di-scroll */
+  /* overflow: hidden; */
 }
 </style>
 
@@ -264,28 +263,6 @@ onMounted(() => {
   padding: 1rem 2rem;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--primary);
-  text-decoration: none;
-}
-
-.logo-icon {
-  width: 40px;
-  height: 40px;
-  background: var(--gradient-primary);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.2rem;
-}
-
 /* Hero Section */
 .hero {
   min-height: 100vh;
@@ -314,8 +291,6 @@ onMounted(() => {
   z-index: 2;
   max-width: 800px;
   padding: 0 1rem;
-
-  /* Tambahkan padding untuk mobile */
 }
 
 .hero h1 {
