@@ -12,8 +12,6 @@
                 <router-link to="/asset" class="nav-link">Aset</router-link>
                 <router-link to="/visitor" class="nav-link">Pengunjung</router-link>
                 <router-link to="/laporan" class="nav-link">Laporan</router-link>
-               
-               
             </div>
         </nav>
     </header>
@@ -40,7 +38,7 @@
 
         <div class="dashboard-grid">
             <div class="dashboard-card ai-enhanced">
-                <div class="ai-badge"></div>
+                <div class="ai-badge">AI Optimized</div>
                 <div class="card-header">
                     <div class="card-title">Total Rak</div>
                     <div class="card-icon" style="background: var(--gradient-primary);">
@@ -58,11 +56,10 @@
                         <i class="fas fa-chart-pie"></i>
                     </div>
                 </div>
-                <div class="card-value">75%</div>
+                <div class="card-value">{{ capacity }}%</div>
                 <div class="card-subtitle">Dari total kapasitas</div>
                 <div class="usage-bar">
-                    <div class="usage-fill" style="width: 75%; background: var(--gradient-secondary);">
-                    </div>
+                    <div class="usage-fill" :style="{ width: capacity + '%', background: 'var(--gradient-secondary)'}"></div>
                 </div>
             </div>
 
@@ -110,12 +107,13 @@
 
         <div class="chart-container">
             <div class="chart-header">
-                <h3 class="chart-title">Trend Penggunaan Daya (7 Hari Terakhir)</h3>
+                <h3 class="chart-title">Trend Penggunaan Daya (Real-time)</h3>
             </div>
             <div style="height: 350px;">
-                <Line :data="chartData" :options="chartOptions" />
+                <Line :data="chartData" :options="chartOptions" ref="lineChartRef" />
             </div>
         </div>
+
         <div class="activity-list">
             <div class="activity-header">
                 <h3 class="activity-title">Aktivitas Terbaru</h3>
@@ -180,7 +178,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, reactive } from 'vue';
 import { Line } from 'vue-chartjs';
 import {
     Chart as ChartJS,
@@ -193,74 +191,154 @@ import {
     Legend,
     Filler
 } from 'chart.js';
+import annotationPlugin from 'chartjs-plugin-annotation';
+import zoomPlugin from 'chartjs-plugin-zoom'; 
 
 ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-    Filler
+    CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler,
+    annotationPlugin, 
+    zoomPlugin
 );
 
-const chartData = {
-    labels: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'],
-    datasets: [{
-        label: 'Penggunaan Daya (%)',
-        data: [65, 68, 72, 70, 75, 77, 72],
-        backgroundColor: 'rgba(26, 115, 232, 0.2)',
-        borderColor: '#1a73e8',
-        tension: 0.4,
-        fill: true,
-        pointBackgroundColor: '#1a73e8',
-        pointHoverBorderColor: '#0d47a1',
-        pointHoverRadius: 7,
-    },],
+const POWER_THRESHOLD = 80;
+const initialDataPoints = 15;
+
+const chartData = reactive({
+    labels: Array.from({ length: initialDataPoints }, (_, i) => `-${initialDataPoints - i}s`),
+    datasets: [
+        {
+            label: 'Daya Minggu Ini (%)',
+            data: Array.from({ length: initialDataPoints }, () => Math.floor(Math.random() * 20) + 55),
+            backgroundColor: 'rgba(26, 115, 232, 0.2)',
+            borderColor: '#1a73e8',
+            pointBackgroundColor: '#1a73e8',
+            tension: 0.4,
+            fill: true,
+        },
+        {
+            label: 'Daya Minggu Lalu (%)',
+            data: Array.from({ length: initialDataPoints }, () => Math.floor(Math.random() * 20) + 50),
+            backgroundColor: 'rgba(95, 99, 104, 0.1)',
+            borderColor: '#5f6368',
+            pointBackgroundColor: '#5f6368',
+            tension: 0.4,
+            fill: false,
+            borderDash: [5, 5]
+        }
+    ]
+});
+
+const handleChartClick = (event, elements) => {
+    if (elements.length > 0) {
+        const dataIndex = elements[0].index;
+        const datasetIndex = elements[0].datasetIndex;
+        const value = chartData.datasets[datasetIndex].data[dataIndex];
+        const label = chartData.labels[dataIndex];
+        showAINotification(`Detail: Data pada ${label} adalah ${value}%`);
+    }
 };
 
-const chartOptions = {
+const chartOptions = reactive({
     responsive: true,
     maintainAspectRatio: false,
+    onClick: handleChartClick,
+    interaction: {
+        intersect: false,
+        mode: 'index',
+    },
     plugins: {
         legend: {
-            display: false,
+            position: 'top',
+            labels: {
+                usePointStyle: true,
+            }
         },
         tooltip: {
             enabled: true,
             backgroundColor: '#202124',
             titleColor: '#ffffff',
             bodyColor: '#ffffff',
-            borderColor: '#5f6368',
-            borderWidth: 1,
-            displayColors: false,
+            padding: 12,
             callbacks: {
-                label: function (context) {
-                    return `Penggunaan: ${context.parsed.y}%`;
+                title: (tooltipItems) => `Data pada: ${tooltipItems[0].label}`,
+                label: (context) => {
+                    let label = context.dataset.label || '';
+                    if (label) {
+                        label += ': ';
+                    }
+                    if (context.parsed.y !== null) {
+                        label += `${context.parsed.y.toFixed(1)}%`;
+                    }
+                    return label;
                 }
             }
         },
+        annotation: {
+            annotations: {
+                thresholdLine: {
+                    type: 'line',
+                    yMin: POWER_THRESHOLD,
+                    yMax: POWER_THRESHOLD,
+                    borderColor: '#ea4335',
+                    borderWidth: 2,
+                    borderDash: [6, 6],
+                    label: {
+                        enabled: true,
+                        content: `Threshold (${POWER_THRESHOLD}%)`,
+                        position: 'end',
+                        backgroundColor: 'rgba(234, 67, 53, 0.8)',
+                    }
+                }
+            }
+        },
+        zoom: {
+            pan: {
+                enabled: true,
+                mode: 'x',
+            },
+            zoom: {
+                wheel: {
+                    enabled: true,
+                },
+                pinch: {
+                    enabled: true
+                },
+                mode: 'x',
+            }
+        }
     },
     scales: {
         y: {
             beginAtZero: false,
-            grid: {
-                color: '#f1f3f4',
-            },
-            ticks: {
-                callback: function (value) {
-                    return value + '%'
-                }
-            }
+            max: 100,
+            grid: { color: '#f1f3f4' },
+            ticks: { callback: (value) => value + '%' }
         },
         x: {
-            grid: {
-                display: false,
-            },
+            grid: { display: false },
         },
     },
-};
+});
+
+function updateChartData() {
+    const now = new Date();
+    const newLabel = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+    const newData = power.value;
+    const lastWeekData = Math.floor(Math.random() * 20) + 50;
+
+    chartData.labels.shift();
+    chartData.datasets[0].data.shift();
+    chartData.datasets[1].data.shift();
+    
+    chartData.labels.push(newLabel);
+    chartData.datasets[0].data.push(newData);
+    chartData.datasets[1].data.push(lastWeekData);
+
+    const pointColors = chartData.datasets[0].data.map(d => 
+        d > POWER_THRESHOLD ? '#ea4335' : '#1a73e8'
+    );
+    chartData.datasets[0].pointBackgroundColor = pointColors;
+}
 
 const totalRacks = ref(4);
 const capacity = ref(75);
@@ -274,14 +352,16 @@ let metricInterval = null;
 let learningInterval = null;
 
 function updateAIMetrics() {
-    capacity.value = Math.floor(Math.random() * 5) + 66;
-    power.value = Math.floor(Math.random() * 6) + 70;
+    capacity.value = Math.floor(Math.random() * 10) + 70;
+    power.value = Math.floor(Math.random() * 15) + 65;
     visitors.value = Math.floor(Math.random() * 5) + 10;
+    
     const efficiencyPrediction = (95 + Math.random() * 4).toFixed(1);
-    const confidence = (94 + Math.random() * 5).toFixed(1);
-    aiInsightEfficiency.value = `AI Prediction: ${efficiencyPrediction}% system efficiency (${confidence}% confidence)`;
+    aiInsightEfficiency.value = `AI Prediction: ${efficiencyPrediction}% system efficiency`;
     aiInsightEnergy.value = `Energy optimization: ${(12 + Math.random() * 8).toFixed(1)}% savings detected`;
     aiInsightAnomaly.value = `Anomaly detection: ${Math.random() > 0.1 ? 'Minor anomaly in Rack-B' : 'All systems normal'}`;
+
+    updateChartData();
 }
 
 function showAINotification(message) {
@@ -289,28 +369,19 @@ function showAINotification(message) {
     notifications.value.push({ id, message });
     setTimeout(() => {
         notifications.value = notifications.value.filter(n => n.id !== id);
-    }, 4000);
+    }, 5000);
 }
 
 function simulateAILearning() {
-    const learningMessages = [
-        'AI model updated with new patterns',
-        'Machine learning optimization complete',
-        'Predictive algorithms recalibrated',
-        'Neural network training in progress',
-        'AI insights generation completed'
-    ];
+    const learningMessages = [ 'AI model updated with new patterns', 'Machine learning optimization complete', 'Predictive algorithms recalibrated', 'Neural network training in progress', 'AI insights generation completed' ];
     if (Math.random() > 0.7) {
-        const message = learningMessages[Math.floor(Math.random() * learningMessages.length)];
-        showAINotification(message);
+        showAINotification(learningMessages[Math.floor(Math.random() * learningMessages.length)]);
     }
 }
 
 onMounted(() => {
-    updateAIMetrics();
-    setTimeout(() => {
-        showAINotification('AI system initialized successfully');
-    }, 1500);
+    setTimeout(() => showAINotification('AI system initialized successfully'), 1500);
+    // Interval diatur ke 3000ms (3 detik)
     metricInterval = setInterval(updateAIMetrics, 3000);
     learningInterval = setInterval(simulateAILearning, 15000);
 });
@@ -319,10 +390,11 @@ onUnmounted(() => {
     clearInterval(metricInterval);
     clearInterval(learningInterval);
 });
+
 </script>
 
 <style>
-/* SEMUA CSS DARI KODE ASLI ANDA ADA DI SINI */
+/* CSS tidak ada perubahan */
 :root {
     --primary: #1a73e8;
     --primary-dark: #0d47a1;
@@ -720,14 +792,12 @@ body {
         opacity: 0;
         transform: translateY(30px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-/* Floating Chatbot */
 .floating-chatbot {
     position: fixed;
     bottom: 2rem;
@@ -752,7 +822,6 @@ body {
     transform: scale(1.1);
     box-shadow: 0 10px 30px rgba(26, 115, 232, 0.4);
     animation-play-state: paused;
-    /* Optional: pause animation on hover */
 }
 
 .chatbot-tooltip {
@@ -789,11 +858,9 @@ body {
     0% {
         transform: translateY(0px);
     }
-
     50% {
         transform: translateY(-10px);
     }
-
     100% {
         transform: translateY(0px);
     }
@@ -806,26 +873,21 @@ body {
         gap: 1rem;
         padding: 1rem;
     }
-
     .nav-links {
         gap: 0.5rem;
         flex-wrap: wrap;
         justify-content: center;
     }
-
     .main {
         padding: 1rem;
     }
-
     .page-title {
         font-size: 2rem;
     }
-
     .ai-insights-banner {
         flex-direction: column;
         gap: 1rem;
     }
-
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
