@@ -18,7 +18,7 @@
         <div class="cta-buttons">
           <router-link to="/dashboard" class="btn btn-primary">
             <i class="fas fa-tachometer-alt"></i>
-            Lihat Dashboard
+            Prototype Dashboard
           </router-link>
           <a href="#features" class="btn btn-secondary">
             <i class="fas fa-info-circle"></i>
@@ -43,7 +43,7 @@
           </router-link>
 
           <router-link to="/rack" class="feature-card ai-powered">
-            <div class="ai-badge pulse">MCP Integrated</div>
+            <div class="ai-badge pulse">Real Time</div>
             <div class="feature-icon"><i class="fas fa-server"></i></div>
             <h3 class="feature-title">Visualisasi Rak</h3>
             <p class="feature-description">Representasi visual 3D dengan AI optimization dan MCP server integration.</p>

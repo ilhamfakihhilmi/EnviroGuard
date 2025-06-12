@@ -12,8 +12,8 @@
                 <router-link to="/asset" class="nav-link">Aset</router-link>
                 <router-link to="/visitor" class="nav-link">Pengunjung</router-link>
                 <router-link to="/laporan" class="nav-link">Laporan</router-link>
-                <router-link to="/mobile" class="nav-link">Mobile</router-link>
-                <router-link to="/gallery" class="nav-link">Gallery</router-link>
+               
+               
             </div>
         </nav>
     </header>
@@ -40,7 +40,7 @@
 
         <div class="dashboard-grid">
             <div class="dashboard-card ai-enhanced">
-                <div class="ai-badge">AI Optimized</div>
+                <div class="ai-badge"></div>
                 <div class="card-header">
                     <div class="card-title">Total Rak</div>
                     <div class="card-icon" style="background: var(--gradient-primary);">

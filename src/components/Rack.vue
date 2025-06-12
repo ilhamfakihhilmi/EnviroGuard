@@ -12,8 +12,8 @@
                 <router-link to="/asset" class="nav-link">Aset</router-link>
                 <router-link to="/visitor" class="nav-link">Pengunjung</router-link>
                 <router-link to="/laporan" class="nav-link">Laporan</router-link>
-                <router-link to="/mobile" class="nav-link">Mobile</router-link>
-                <router-link to="/gallery" class="nav-link">Gallery</router-link>
+                
+              
             </div>
         </nav>
     </header>
@@ -121,7 +121,7 @@
                             </span>
                         </div>
                     </div>
-                    <div class="detail-card">
+                    <!-- <div class="detail-card">
                         <div class="detail-label">Koneksi Jaringan</div>
                         <div class="detail-value">
                             {{ selectedRack.stats.network.speed }}
@@ -129,7 +129,7 @@
                                 {{ selectedRack.stats.network.status }}
                             </span>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="detail-card">
                         <div class="detail-label">Kelembaban</div>
                         <div class="detail-value">
@@ -224,11 +224,10 @@ const racks = reactive([
         ],
         installedDevices: [
             { unit: 'U40-U42', start: 40, end: 42, name: 'Juniper MX204', status: 'Active', power: '500W' },
-            { unit: 'U37-U38', start: 37, end: 38, name: 'HP ProLiant DL380', status: 'Active', power: '420W' },
             { unit: 'U25-U26', start: 25, end: 26, name: 'PDU Vertikal', status: 'Active', power: '50W' },
         ],
         stats: {
-            capacity: { used: 7, total: 42, percentage: 17 },
+            capacity: { used: 5, total: 42, percentage: 17 },
             power: { used: 0.97, total: 5.0, percentage: 19 },
             weight: { used: 95, total: 750 },
             temperature: { value: 22.1, status: 'Normal' },
@@ -248,9 +247,9 @@ const racks = reactive([
             { id: 5, type: 'warning', icon: 'fas fa-video-slash', message: 'Camera Offline' }
         ],
         installedDevices: [
-            { unit: 'U39-U40', start: 39, end: 40, name: 'IBM Power System S922', status: 'Critical', power: '800W' },
+            { unit: 'U39-U40', start: 39, end: 40, name: 'IBM Power System S922', status: 'Active', power: '800W' },
             { unit: 'U30-U31', start: 30, end: 31, name: 'Fortinet Firewall 100F', status: 'Active', power: '120W' },
-            { unit: 'U20-U22', start: 20, end: 22, name: 'Server #3 (Unknown)', status: 'Critical', power: '600W' },
+            { unit: 'U20-U22', start: 20, end: 22, name: 'Server #3 (Unknown)', status: 'Active', power: '600W' },
         ],
         stats: {
             capacity: { used: 7, total: 42, percentage: 17 },
