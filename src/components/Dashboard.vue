@@ -38,7 +38,7 @@
 
         <div class="dashboard-grid">
             <div class="dashboard-card ai-enhanced">
-                <div class="ai-badge">AI Optimized</div>
+                <div class="ai-badge"></div>
                 <div class="card-header">
                     <div class="card-title">Total Rak</div>
                     <div class="card-icon" style="background: var(--gradient-primary);">

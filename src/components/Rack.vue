@@ -200,7 +200,6 @@ const racks = reactive([
         ],
         installedDevices: [
             { unit: 'U38-U39', start: 38, end: 39, name: 'Dell PowerEdge R740', status: 'Active', power: '450W' },
-            { unit: 'U35-U36', start: 35, end: 36, name: 'Cisco Catalyst 9300', status: 'Maintenance', power: '150W' },
             { unit: 'U28-U31', start: 28, end: 31, name: 'EMC Isilon H500', status: 'Active', power: '700W' },
         ],
         stats: {
