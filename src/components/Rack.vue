@@ -7,24 +7,13 @@
                 </div>
             </router-link>
             <div class="nav-links">
-                <router-link to="/dashboard" class="nav-link">
-                    Dashboard
-                </router-link>
-                <router-link to="/rack" class="nav-link">
-                    Rak Server
-                </router-link>
-                <router-link to="/asset" class="nav-link">
-                    Aset
-                </router-link>
-                <router-link to="/visitor" class="nav-link">
-                    Pengunjung
-                </router-link>
-                <router-link to="/laporan" class="nav-link">
-                    Laporan
-                </router-link>
-                <router-link to="/mobile" class="nav-link">
-                    Mobile
-                </router-link>
+                <router-link to="/dashboard" class="nav-link">Dashboard</router-link>
+                <router-link to="/rack" class="nav-link">Rak Server</router-link>
+                <router-link to="/asset" class="nav-link">Aset</router-link>
+                <router-link to="/visitor" class="nav-link">Pengunjung</router-link>
+                <router-link to="/laporan" class="nav-link">Laporan</router-link>
+                <router-link to="/mobile" class="nav-link">Mobile</router-link>
+                <router-link to="/gallery" class="nav-link">Gallery</router-link>
             </div>
         </nav>
     </header>

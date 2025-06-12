@@ -14,9 +14,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="mcp-status">
-                    <div class="mcp-indicator"></div>
-                    <span>MCP Connected</span>
+                <div class="header-controls">
+                    <div class="mcp-status">
+                        <div class="mcp-indicator"></div>
+                        <span>MCP Connected</span>
+                    </div>
+                    <button class="close-button" @click="closeChatbot" aria-label="Tutup Chat">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
             </div>
 
@@ -68,9 +73,14 @@
 </template>
 
 <script setup>
+// --- PERUBAHAN 1: Impor 'useRouter' dari 'vue-router' ---
 import { ref, reactive, nextTick, watch, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
-// --- State Reaktif ---
+// --- PERUBAHAN 2: Dapatkan instance router ---
+const router = useRouter();
+
+// State Reaktif (Tidak ada perubahan di sini)
 const newMessage = ref('');
 const messages = reactive([]);
 const isTyping = ref(false);
@@ -86,13 +96,19 @@ const quickActions = reactive([
     { text: '📈 Generate Laporan', prompt: 'Generate laporan bulanan' },
 ]);
 
-// --- Metode ---
+// Metode (Tidak ada perubahan di sini kecuali di 'closeChatbot')
 const scrollToBottom = async () => {
     await nextTick();
     if (chatMessagesContainer.value) {
         chatMessagesContainer.value.scrollTop = chatMessagesContainer.value.scrollHeight;
     }
 };
+
+// --- PERUBAHAN 3: Ubah logika fungsi closeChatbot ---
+function closeChatbot() {
+    // Gunakan router untuk kembali ke halaman sebelumnya
+    router.back();
+}
 
 watch(messages, scrollToBottom, { deep: true });
 watch(isTyping, scrollToBottom);
@@ -169,20 +185,20 @@ function generateAIResponse(userMessage) {
     });
 }
 
-// --- Lifecycle Hook ---
+// Lifecycle Hook
 onMounted(() => {
     messages.push({
         id: 1,
         sender: 'ai',
         content: `Halo! Saya adalah AI Assistant EnviroGuard yang terhubung dengan MCP server. Saya dapat membantu Anda dengan:
-                     <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
-                         <li>Monitoring real-time data center</li>
-                         <li>Analisis prediktif dan anomaly detection</li>
-                         <li>Optimasi energi dan efisiensi</li>
-                         <li>Troubleshooting dan maintenance guidance</li>
-                         <li>Laporan dan insights berbasis AI</li>
-                     </ul>
-                     <p style="margin-top: 0.5rem;">Bagaimana saya bisa membantu Anda hari ini?</p>`,
+                                 <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                                     <li>Monitoring real-time data center</li>
+                                     <li>Analisis prediktif dan anomaly detection</li>
+                                     <li>Optimasi energi dan efisiensi</li>
+                                     <li>Troubleshooting dan maintenance guidance</li>
+                                     <li>Laporan dan insights berbasis AI</li>
+                                 </ul>
+                                 <p style="margin-top: 0.5rem;">Bagaimana saya bisa membantu Anda hari ini?</p>`,
         timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
     });
     chatInputRef.value.focus();
@@ -190,6 +206,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* Tidak ada perubahan pada CSS, semua style tetap sama */
 :root {
     --primary-color: #1a73e8;
     --secondary-color: #34a853;
@@ -247,6 +264,7 @@ onMounted(() => {
     align-items: center;
     justify-content: space-between;
     flex-shrink: 0;
+    position: relative; 
 }
 
 .chatbot-title {
@@ -350,7 +368,6 @@ onMounted(() => {
     color: rgba(255, 255, 255, 0.7);
 }
 
-
 .typing-indicator {
     display: flex;
     align-items: center;
@@ -448,7 +465,6 @@ onMounted(() => {
     gap: 0.5rem;
     margin-top: 1rem;
     margin-left: 55px;
-    /* Aligns with message content */
     flex-wrap: wrap;
 }
 
@@ -469,10 +485,13 @@ onMounted(() => {
     color: var(--primary-color);
 }
 
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
 .mcp-status {
-    position: absolute;
-    top: 1.5rem;
-    right: 1.5rem;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border-radius: 20px;
@@ -481,6 +500,23 @@ onMounted(() => {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    color: var(--white);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.close-button:hover {
+    transform: scale(1.1);
+    opacity: 0.8;
 }
 
 .mcp-indicator {
@@ -559,6 +595,14 @@ onMounted(() => {
     .quick-actions {
         margin-left: 0;
         justify-content: flex-start;
+    }
+    
+    .header-controls {
+        gap: 1rem;
+    }
+
+    .chatbot-header {
+        padding: 1rem;
     }
 }
 </style>
