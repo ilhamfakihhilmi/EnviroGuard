@@ -9,6 +9,9 @@ import image2 from '../assets/images/image2.jpeg';
 import image3 from '../assets/images/image3.jpeg';
 import image4 from '../assets/images/image4.jpeg';
 import image5 from '../assets/images/image5.jpeg';
+import image6 from '../assets/images/image6.jpeg';
+import image7 from '../assets/images/image7.jpeg';
+import image8 from '../assets/images/image8.jpeg';
 
 // --- DATA GALERI ---
 const galleryItems = ref([
@@ -47,6 +50,27 @@ const galleryItems = ref([
     subtext: 'Melihat lebih dekat hasil kerja', 
     layout: ''
   },
+  { 
+    id: 6, 
+    src: image6, 
+    text: 'Pengujian Sistem', 
+    subtext: 'Memastikan semua berjalan lancar', 
+    layout: ''
+  },
+  { 
+    id: 7, 
+    src: image7, 
+    text: 'Presentasi Proyek', 
+    subtext: 'Memperlihatkan hasil kerja tim', 
+    layout: 'wide'
+  },
+  { 
+    id: 8, 
+    src: image8, 
+    text: 'Perayaan Sukses', 
+    subtext: 'Merayakan pencapaian bersama', 
+    layout: 'big'
+  }
 ]);
 
 // --- LOGIKA UNTUK POPUP PREVIEW ---
