@@ -67,8 +67,8 @@ const galleryItems = ref([
   { 
     id: 8, 
     src: image8, 
-    text: 'Perayaan Sukses', 
-    subtext: 'Merayakan pencapaian bersama', 
+    text: 'Testing alat IOT', 
+    subtext: 'Pengujian alat IOT yang telah dibuat', 
     layout: 'big'
   }
 ]);
