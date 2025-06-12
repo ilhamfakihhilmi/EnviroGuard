@@ -1,40 +1,48 @@
 <script setup>
 import { ref } from 'vue';
 
+// --- GAMBAR DIIMPOR SEBAGAI MODUL ---
+// Ini adalah cara yang benar untuk memastikan Vite memproses gambar untuk produksi
+import logo from '/src/assets/images/logo.jpeg'; 
+import image1 from '../assets/images/image1.jpeg';
+import image2 from '../assets/images/image2.jpeg';
+import image3 from '../assets/images/image3.jpeg';
+import image4 from '../assets/images/image4.jpeg';
+import image5 from '../assets/images/image5.jpeg';
+
 // --- DATA GALERI ---
-// Saya sedikit menyesuaikan urutan dan layout untuk alur visual yang lebih baik
 const galleryItems = ref([
   { 
     id: 1, 
-    src: '/src/assets/images/image1.jpeg', 
+    src: image1, 
     text: 'Dashboard Monitoring', 
     subtext: 'Visualisasi data sensor secara real-time', 
     layout: 'big' 
   },
   { 
     id: 2, 
-    src: '/src/assets/images/image2.jpeg', 
+    src: image2, 
     text: 'Sesi Coding', 
     subtext: 'Fokus pada pengembangan perangkat lunak', 
     layout: 'tall'
   },
   { 
     id: 3, 
-    src: '/src/assets/images/image3.jpeg', 
+    src: image3, 
     text: 'Diskusi Tim', 
     subtext: 'Kolaborasi dalam pengembangan proyek', 
     layout: 'wide'
   },
   { 
     id: 4, 
-    src: '/src/assets/images/image4.jpeg', 
+    src: image4, 
     text: 'Instalasi Hardware', 
     subtext: 'Menghubungkan komponen IoT', 
     layout: ''
   },
   { 
     id: 5, 
-    src: '/src/assets/images/image5.jpeg', 
+    src: image5, 
     text: 'Prototyping', 
     subtext: 'Melihat lebih dekat hasil kerja', 
     layout: ''
@@ -42,42 +50,41 @@ const galleryItems = ref([
 ]);
 
 // --- LOGIKA UNTUK POPUP PREVIEW ---
-// Variabel untuk menyimpan data item yang sedang aktif di popup
 const activeItem = ref(null);
 
-// Fungsi untuk menampilkan popup dengan data item yang diklik
 function showPreview(item) {
   activeItem.value = item;
 }
 
-// Fungsi untuk menutup/menyembunyikan popup
 function closePreview() {
   activeItem.value = null;
 }
 </script>
 
 <template>
+  <header class="header">
+      <nav class="nav">
+          <router-link to="/">
+              <div>
+                  <img :src="logo" alt="Logo" style="width: 135px; height: auto;" />
+              </div>
+          </router-link>
+          <div class="nav-links">
+              <router-link to="/dashboard" class="nav-link">Dashboard</router-link>
+              <router-link to="/rack" class="nav-link">Rak Server</router-link>
+              <router-link to="/asset" class="nav-link">Aset</router-link>
+              <router-link to="/visitor" class="nav-link">Pengunjung</router-link>
+              <router-link to="/laporan" class="nav-link">Laporan</router-link>
+              <router-link to="/mobile" class="nav-link">Mobile</router-link>
+              <router-link to="/gallery" class="nav-link">Gallery</router-link>
+          </div>
+      </nav>
+  </header>
 
-<header class="header">
-        <nav class="nav">
-            <router-link to="/">
-                <div>
-                    <img src="/src/assets/images/logo.jpeg" alt="Logo" style="width: 135px; height: auto;" />
-                </div>
-            </router-link>
-            <div class="nav-links">
-                <router-link to="/dashboard" class="nav-link">Dashboard</router-link>
-                <router-link to="/rack" class="nav-link">Rak Server</router-link>
-                <router-link to="/asset" class="nav-link">Aset</router-link>
-                <router-link to="/visitor" class="nav-link">Pengunjung</router-link>
-                <router-link to="/laporan" class="nav-link">Laporan</router-link>
-                <router-link to="/mobile" class="nav-link">Mobile</router-link>
-                <router-link to="/gallery" class="nav-link">Gallery</router-link>
-            </div>
-        </nav>
-    </header>
   <div class="gallery-container">
     <h1 class="gallery-title">Galeri Proyek & Aktivitas</h1>
+    <p class="gallery-subtitle">Dokumentasi visual dari proses pengembangan, kolaborasi tim, hingga implementasi proyek EnviroGuard.</p>
+    
     <div class="gallery-grid">
       <div v-for="item in galleryItems" :key="item.id" class="gallery-item" :class="item.layout" @click="showPreview(item)">
         <img :src="item.src" :alt="item.text" class="gallery-image">
@@ -109,16 +116,57 @@ html, body {
   padding: 0;
   height: 100%;
   width: 100%;
-  background-color: #1a1a1a;
 }
 </style>
 
 <style scoped>
+/* Style untuk header */
+.header {
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
 
-/* Style untuk Galeri (sebagian besar tidak berubah) */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  height: 70px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.nav-link:hover {
+  background-color: #f0f0f0;
+}
+
+.router-link-exact-active {
+  background-color: #e0e7ff;
+  color: #4f46e5;
+}
+
+
+/* Style untuk Galeri */
 .gallery-container {
-  width: 100vw;
-  height: 100vh;
+  width: 100%; 
+  min-height: calc(100vh - 70px);
   padding: 15px;
   box-sizing: border-box;
   overflow-y: auto;
@@ -128,27 +176,41 @@ html, body {
 .gallery-title {
   text-align: center;
   color: #333;
-  margin: 15px 0 30px 0;
+  margin: 20px 0 10px 0; /* Mengurangi margin bawah untuk memberi ruang ke subjudul */
   font-size: 2.5rem;
   font-weight: bold;
 }
+
+/* PERUBAHAN: Menambahkan style untuk subjudul */
+.gallery-subtitle {
+  text-align: center;
+  color: #555;
+  font-size: 1.1rem;
+  max-width: 800px; /* Batasi lebar agar mudah dibaca di layar besar */
+  margin: 0 auto 40px auto; /* Memberi jarak ke grid di bawahnya */
+  padding: 0 15px;
+  line-height: 1.5;
+}
+
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Sedikit lebih lebar */
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   grid-auto-rows: 250px;
   grid-auto-flow: dense;
   gap: 15px;
+  max-width: 1400px; 
+  margin: 0 auto; 
 }
 .gallery-item {
   position: relative;
   overflow: hidden;
   border-radius: 15px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease-in-out; /* Transisi untuk semua properti */
+  transition: all 0.3s ease-in-out;
   cursor: pointer;
 }
 .gallery-item:hover {
-  transform: scale(1.03); /* Sedikit lebih besar saat hover */
+  transform: scale(1.03);
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
   z-index: 10;
 }
@@ -161,7 +223,7 @@ html, body {
 .gallery-text { margin: 0; font-size: 1.2rem; text-align: center; font-weight: bold; }
 .gallery-subtext { margin: 4px 0 0 0; font-size: 0.9rem; text-align: center; font-weight: normal; opacity: 0.85; }
 
-/* --- STYLE BARU UNTUK POPUP --- */
+/* Style untuk Popup */
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -180,8 +242,8 @@ html, body {
   border-radius: 15px;
   padding: 25px;
   width: 90%;
-  max-width: 800px; /* Batas lebar popup */
-  max-height: 90vh; /* Batas tinggi popup */
+  max-width: 800px;
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
   box-shadow: 0 10px 40px rgba(0,0,0,0.5);
@@ -200,8 +262,8 @@ html, body {
 }
 .popup-image {
   width: 100%;
-  max-height: 65vh; /* Tinggi maksimum gambar agar teks muat */
-  object-fit: contain; /* Tampilkan seluruh gambar tanpa terpotong */
+  max-height: 65vh;
+  object-fit: contain;
   border-radius: 8px;
 }
 .popup-details {
@@ -219,7 +281,7 @@ html, body {
   margin: 0;
 }
 
-/* --- Animasi Fade untuk Transisi --- */
+/* Animasi Fade untuk Transisi */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
@@ -229,12 +291,13 @@ html, body {
   opacity: 0;
 }
 
-/* Media Query (Tidak diubah) */
+/* Media Query */
 @media (max-width: 768px) {
   .wide, .big { grid-column: span 2; grid-row: span 1; }
   .tall { grid-row: span 2; grid-column: span 1; }
   .gallery-grid { grid-auto-rows: 200px; }
   .popup-text { font-size: 1.4rem; }
   .popup-subtext { font-size: 1rem; }
+  .nav-links { display: none; }
 }
 </style>
