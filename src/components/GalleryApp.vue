@@ -12,6 +12,7 @@ import image5 from '../assets/images/image5.jpeg';
 import image6 from '../assets/images/image6.jpeg';
 import image7 from '../assets/images/image7.jpeg';
 import image8 from '../assets/images/image8.jpeg';
+import image9 from '../assets/images/image9.jpeg';
 
 // --- DATA GALERI ---
 const galleryItems = ref([
@@ -70,6 +71,14 @@ const galleryItems = ref([
     text: 'Testing alat IOT', 
     subtext: 'Pengujian alat IOT yang telah dibuat', 
     layout: 'big'
+  }
+  , 
+  { 
+    id: 9, 
+    src: image9, 
+    text: 'Pemasangan Sensor', 
+    subtext: 'Memasang sensor di lokasi proyek', 
+    layout: 'tall'
   }
 ]);
 
