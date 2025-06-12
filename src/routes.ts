@@ -11,7 +11,7 @@ import Reports from "./components/Reports.vue";
 import MobileApp from "./components/MobileApp.vue";
 import Chatbot from "./components/Chatbot.vue";
 import ROICalculator from "./components/ROICalculator.vue";
-import Gallery from "./components/Gallery.vue";
+import GalleryTeknis from "./components/Gallery.vue";
 // import NotFound from "../views/NotFound.vue";
 
 // Buat komponen placeholder langsung di sini atau impor dari file terpisah
@@ -80,9 +80,9 @@ export const routes = [
   },
   {
     path: "/gallery",
-    name: "Gallery",
-    component: Gallery,
-    meta: { title: "Gallery" },
+    name: "GalleryTeknis",
+    component: GalleryTeknis,
+    meta: { title: "Gallery Teknis" },
   },
   // {
   //   // Rute Catch-all untuk halaman 404
