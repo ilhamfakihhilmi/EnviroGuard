@@ -191,15 +191,13 @@
 
 <script setup>
 import { reactive, ref, onMounted } from 'vue';
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
+import 'animate.css';
 
 const totalUnits = 42;
-
-// --- State Reaktif (Data yang menggerakkan aplikasi) ---
-
-// State baru untuk melacak rak yang dipilih
 const selectedRack = ref(null);
 
-// Data rak sekarang berisi 'installedDevices' dan 'stats' untuk setiap rak
 const racks = reactive([
     {
         id: 'rack-1',
@@ -307,71 +305,196 @@ const legendItems = [
     { label: 'Kosong', style: 'background: var(--light-gray); border: 1px dashed var(--gray)' },
 ];
 
-
-// --- Fungsi dan Metode ---
-
-// Fungsi ini sekarang menerima daftar perangkat sebagai argumen
 function generateRackUnits(installedDevices) {
     const units = [];
     for (let i = totalUnits; i >= 1; i--) {
         const device = installedDevices.find(d => i >= d.start && i <= d.end);
-
-        let statusMap = {
-            'Active': 'used',
-            'Maintenance': 'maintenance',
-            'Critical': 'critical'
-        }
-
+        let statusMap = { 'Active': 'used', 'Maintenance': 'maintenance', 'Critical': 'critical' };
         if (device) {
-            units.push({
-                number: i,
-                status: device.status,
-                statusClass: statusMap[device.status] || 'used',
-                displayName: `U${i}: ${device.name}`,
-                title: `Unit ${i} - ${device.name} (${device.status})`,
-                deviceData: device,
-            });
+            units.push({ number: i, status: device.status, statusClass: statusMap[device.status] || 'used', displayName: `U${i}: ${device.name}`, title: `Unit ${i} - ${device.name} (${device.status})`, deviceData: device });
         } else {
-            units.push({
-                number: i,
-                status: 'Kosong',
-                statusClass: 'empty',
-                displayName: `U${i}`,
-                title: `Unit ${i} - Kosong`,
-                deviceData: null,
-            });
+            units.push({ number: i, status: 'Kosong', statusClass: 'empty', displayName: `U${i}`, title: `Unit ${i} - Kosong`, deviceData: null });
         }
     }
     return units;
 }
 
-// Inisialisasi unit untuk setiap rak berdasarkan 'installedDevices' mereka sendiri
-racks.forEach(rack => {
-    rack.units = generateRackUnits(rack.installedDevices);
-});
+racks.forEach(rack => { rack.units = generateRackUnits(rack.installedDevices); });
 
+function selectRack(rack) { selectedRack.value = rack; }
 
-// Metode untuk memilih rak dan menampilkan detailnya
-function selectRack(rack) {
-    selectedRack.value = rack;
-}
-
+// --- FUNGSI POPUP YANG DIPERBARUI ---
 function showUnitDetails(unit) {
-    const message = unit.deviceData
-        ? `Unit ${unit.number}: ${unit.deviceData.name}\nStatus: ${unit.status}\nPower: ${unit.deviceData.power}`
-        : `Unit ${unit.number}: Kosong\nTersedia untuk instalasi perangkat baru.`;
-    alert(message);
+    const statusInfo = {
+        'Active': { icon: 'fa-check-circle', color: 'var(--secondary)', name: 'Aktif' },
+        'Maintenance': { icon: 'fa-tools', color: 'var(--accent)', name: 'Maintenance' },
+        'Critical': { icon: 'fa-exclamation-triangle', color: 'var(--danger)', name: 'Kritis' },
+    };
+
+    if (unit.deviceData) {
+        const deviceStatus = statusInfo[unit.deviceData.status];
+        Swal.fire({
+            width: 600,
+            html: `
+                <div class="swal-custom-header" style="background: ${deviceStatus.color};">
+                    <i class="fas ${deviceStatus.icon}"></i>
+                    <h2>Detail Perangkat</h2>
+                </div>
+                <div class="swal-custom-content">
+                    <h3>${unit.deviceData.name}</h3>
+                    <div class="swal-detail-item">
+                        <i class="fas fa-layer-group"></i>
+                        <span>Posisi Unit</span>
+                        <strong>${unit.deviceData.unit}</strong>
+                    </div>
+                    <div class="swal-detail-item">
+                        <i class="fas fa-heartbeat"></i>
+                        <span>Status</span>
+                        <strong style="color: ${deviceStatus.color};">${deviceStatus.name}</strong>
+                    </div>
+                    <div class="swal-detail-item">
+                        <i class="fas fa-bolt"></i>
+                        <span>Konsumsi Daya</span>
+                        <strong>${unit.deviceData.power}</strong>
+                    </div>
+                </div>
+            `,
+            // --- Tombol diubah di sini ---
+            showConfirmButton: true, // Tombol utama untuk menutup
+            confirmButtonText: 'Tutup',
+            showCancelButton: false, // Tombol kedua dihapus
+            // -----------------------------
+            customClass: {
+                popup: 'animated animate__fadeInDown swal-custom-popup',
+                confirmButton: 'swal-custom-cancel-button', // Menggunakan style tombol abu-abu
+            },
+            showClass: {
+                popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOutUp'
+            },
+        });
+
+    } else {
+        Swal.fire({
+            icon: 'info',
+            title: `<span style="color: var(--dark);">Unit ${unit.number}: Kosong</span>`,
+            html: `<p style="color: var(--gray);">Unit ini tersedia untuk instalasi perangkat baru.</p>`,
+            confirmButtonText: 'OK',
+            customClass: {
+                popup: 'swal-custom-popup',
+                confirmButton: 'swal-custom-confirm-button',
+            },
+        });
+    }
 }
 
-
-// --- Lifecycle Hooks ---
-onMounted(() => {
-    // Secara default, pilih rak pertama saat komponen dimuat
-    if (racks.length > 0) {
-        selectRack(racks[0]);
-    }
-});
+onMounted(() => { if (racks.length > 0) { selectRack(racks[0]); } });
 </script>
+
+<style>
+/* --- STYLE GLOBAL UNTUK SWEETALERT2 KUSTOM --- */
+.swal-custom-popup {
+    border-radius: var(--border-radius) !important;
+    border: none !important;
+    box-shadow: var(--shadow-hover) !important;
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+.swal-custom-header {
+    padding: 1.5rem;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.swal-custom-header .fas {
+    font-size: 2rem;
+}
+
+.swal-custom-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.swal-custom-content {
+    padding: 2rem;
+    text-align: left;
+}
+
+.swal-custom-content h3 {
+    font-size: 1.75rem;
+    color: var(--dark);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.swal-detail-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: var(--light-gray);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.swal-detail-item .fas {
+    color: var(--primary);
+    font-size: 1.25rem;
+    width: 25px;
+    text-align: center;
+}
+
+.swal-detail-item span {
+    color: var(--gray);
+}
+
+.swal-detail-item strong {
+    margin-left: auto;
+    color: var(--dark);
+    font-weight: 600;
+}
+
+.swal2-actions {
+    padding: 0 2rem 2rem;
+    gap: 1rem;
+}
+
+.swal-custom-confirm-button,
+.swal-custom-cancel-button {
+    border-radius: 8px !important;
+    padding: 0.75rem 1.5rem !important;
+    font-weight: 600 !important;
+    border: none !important;
+    transition: var(--transition) !important;
+    box-shadow: none !important;
+}
+
+.swal-custom-confirm-button {
+    background: var(--gradient-primary) !important;
+    color: white !important;
+}
+
+.swal-custom-confirm-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3) !important;
+}
+
+.swal-custom-cancel-button {
+    background-color: #e0e0e0 !important;
+    color: var(--gray) !important;
+}
+
+.swal-custom-cancel-button:hover {
+    background-color: #d1d1d1 !important;
+}
+</style>
 
 <style scoped>
 /* Seluruh kode CSS dari file asli ditempelkan di sini */
@@ -408,7 +531,6 @@ onMounted(() => {
     color: var(--dark);
 }
 
-/* Header */
 .header {
     background: var(--white);
     box-shadow: var(--shadow);
@@ -474,7 +596,6 @@ onMounted(() => {
     background: rgba(26, 115, 232, 0.1);
 }
 
-/* Main Content */
 .main {
     max-width: 1400px;
     margin: 0 auto;
@@ -497,7 +618,6 @@ onMounted(() => {
     font-size: 1.1rem;
 }
 
-/* Racks Grid */
 .racks-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -512,7 +632,6 @@ onMounted(() => {
     overflow: hidden;
     transition: var(--transition);
     border: 3px solid transparent;
-    /* Tambahkan border transparan */
     cursor: pointer;
 }
 
@@ -521,7 +640,6 @@ onMounted(() => {
     box-shadow: var(--shadow-hover);
 }
 
-/* Style untuk rack yang terpilih */
 .rack-container.selected {
     border-color: var(--primary);
     box-shadow: var(--shadow-hover);
@@ -541,7 +659,6 @@ onMounted(() => {
     animation: fadeInUp 0.6s ease-out;
 }
 
-/* Alert Badges */
 .rack-alerts {
     display: flex;
     flex-wrap: wrap;
@@ -579,7 +696,6 @@ onMounted(() => {
     color: var(--primary);
 }
 
-/* Door and Camera Status */
 .door-status,
 .surveillance-status {
     margin-bottom: 1rem;
@@ -686,7 +802,6 @@ onMounted(() => {
     font-weight: bold;
 }
 
-/* Rack Details */
 .rack-details {
     background: var(--white);
     border-radius: var(--border-radius);
@@ -747,7 +862,6 @@ onMounted(() => {
     display: block;
 }
 
-/* Equipment Table */
 .equipment-section {
     margin-top: 2rem;
 }
@@ -809,7 +923,6 @@ onMounted(() => {
     color: var(--danger);
 }
 
-/* Legend */
 .legend {
     background: var(--white);
     border-radius: var(--border-radius);
@@ -850,7 +963,6 @@ onMounted(() => {
     color: var(--gray);
 }
 
-/* Responsive Design */
 @media (max-width: 1024px) {
     .rack-container {
         grid-template-columns: 1fr;
@@ -892,7 +1004,6 @@ onMounted(() => {
     }
 }
 
-/* Animations */
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -905,7 +1016,6 @@ onMounted(() => {
     }
 }
 
-/* Floating Chatbot */
 .floating-chatbot {
     position: fixed;
     bottom: 2rem;

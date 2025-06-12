@@ -11,6 +11,7 @@ import Reports from "./components/Reports.vue";
 import MobileApp from "./components/MobileApp.vue";
 import Chatbot from "./components/Chatbot.vue";
 import ROICalculator from "./components/ROICalculator.vue";
+import Gallery from "./components/Gallery.vue";
 // import NotFound from "../views/NotFound.vue";
 
 // Buat komponen placeholder langsung di sini atau impor dari file terpisah
@@ -76,6 +77,12 @@ export const routes = [
     name: "ROICalculator",
     component: ROICalculator,
     meta: { title: "Kalkulator ROI" },
+  },
+  {
+    path: "/gallery",
+    name: "Gallery",
+    component: Gallery,
+    meta: { title: "Gallery" },
   },
   // {
   //   // Rute Catch-all untuk halaman 404
