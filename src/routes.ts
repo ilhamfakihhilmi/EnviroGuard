@@ -10,6 +10,7 @@ import Monitoring from "./components/Monitoring.vue";
 import Reports from "./components/Reports.vue";
 import MobileApp from "./components/MobileApp.vue";
 import Chatbot from "./components/Chatbot.vue";
+import ROICalculator from "./components/ROICalculator.vue";
 // import NotFound from "../views/NotFound.vue";
 
 // Buat komponen placeholder langsung di sini atau impor dari file terpisah
@@ -17,7 +18,7 @@ import Chatbot from "./components/Chatbot.vue";
 // Definisikan semua rute aplikasi
 export const routes = [
   {
-    path: "/",
+    path: "/index",
     name: "Home",
     component: Home,
     meta: { title: "EnviroGuard - Home" },
@@ -69,6 +70,12 @@ export const routes = [
     name: "Chatbot",
     component: Chatbot,
     meta: { title: "AI Chatbot Assistant" },
+  },
+  {
+    path: "/roi-calculator",
+    name: "ROICalculator",
+    component: ROICalculator,
+    meta: { title: "Kalkulator ROI" },
   },
   // {
   //   // Rute Catch-all untuk halaman 404

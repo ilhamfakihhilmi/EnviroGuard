@@ -1,21 +1,18 @@
 <template>
     <header class="header">
         <nav class="nav">
-            <a>
+            <router-link to="/index">
                 <div>
-                    <img src="/src/assets/images/logo.jpeg" alt="Logo" style="width: 135px; height: auto" />
+                    <img src="/src/assets/images/logo.jpeg" alt="Logo" style="width: 135px; height: auto;" />
                 </div>
-            </a>
+            </router-link>
             <div class="nav-links">
-                <router-link to="/dashboard" class="nav-link"> Dashboard </router-link>
-                <router-link to="/rack" class="nav-link"> Rak Server </router-link>
-                <router-link to="/asset" class="nav-link"> Aset </router-link>
-                <router-link to="/visitor" class="nav-link"> Pengunjung </router-link>
-                <router-link to="/monitoring" class="nav-link">
-                    Monitoring
-                </router-link>
-                <router-link to="/laporan" class="nav-link"> Laporan </router-link>
-                <router-link to="/mobile" class="nav-link"> Mobile </router-link>
+                <router-link to="/dashboard" class="nav-link">Dashboard</router-link>
+                <router-link to="/rack" class="nav-link">Rak Server</router-link>
+                <router-link to="/asset" class="nav-link">Aset</router-link>
+                <router-link to="/visitor" class="nav-link">Pengunjung</router-link>
+                <router-link to="/laporan" class="nav-link">Laporan</router-link>
+                <router-link to="/mobile" class="nav-link">Mobile</router-link>
             </div>
         </nav>
     </header>
@@ -76,12 +73,20 @@
                                     <div class="mini-card-label">Humidity</div>
                                 </div>
                                 <div class="mini-card">
+                                    <div class="mini-card-value">{{ mockupData.voltage }}V</div>
+                                    <div class="mini-card-label">Voltage</div>
+                                </div>
+                                <div class="mini-card">
                                     <div class="mini-card-value">{{ mockupData.power }}kW</div>
                                     <div class="mini-card-label">Power</div>
                                 </div>
                                 <div class="mini-card">
-                                    <div class="mini-card-value">{{ mockupData.uptime }}%</div>
-                                    <div class="mini-card-label">Uptime</div>
+                                    <div class="mini-card-value">{{ mockupData.doorStatus }}</div>
+                                    <div class="mini-card-label">Door Status</div>
+                                </div>
+                                <div class="mini-card">
+                                    <div class="mini-card-value">{{ mockupData.cameraStatus }}</div>
+                                    <div class="mini-card-label">Camera</div>
                                 </div>
                             </div>
                             <div class="quick-actions">
@@ -124,32 +129,21 @@
                             <div :class="screenshot.screenClass">
                                 <div class="screen-content">
                                     <div class="app-header">
-                                        <div class="app-logo">EnviroGuard</div>
+                                        <div class="app-logo">{{ screenshot.content.title }}</div>
                                         <div class="notification-badge">3</div>
                                     </div>
                                     <div class="dashboard-cards">
-                                        <div class="mini-card">
-                                            <div class="mini-card-value">24.5°C</div>
-                                            <div class="mini-card-label">Temperature</div>
-                                        </div>
-                                        <div class="mini-card">
-                                            <div class="mini-card-value">59%</div>
-                                            <div class="mini-card-label">Humidity</div>
-                                        </div>
-                                        <div class="mini-card">
-                                            <div class="mini-card-value">9.0kW</div>
-                                            <div class="mini-card-label">Power</div>
-                                        </div>
-                                        <div class="mini-card">
-                                            <div class="mini-card-value">99.8%</div>
-                                            <div class="mini-card-label">Uptime</div>
+                                        <div v-for="card in screenshot.content.cards" :key="card.label"
+                                            class="mini-card">
+                                            <div class="mini-card-value">{{ card.value }}</div>
+                                            <div class="mini-card-label">{{ card.label }}</div>
                                         </div>
                                     </div>
                                     <div class="quick-actions">
                                         <div class="action-title">Quick Actions</div>
                                         <div class="action-list">
-                                            <div class="action-item">View Reports</div>
-                                            <div class="action-item">Check Alerts</div>
+                                            <div class="action-item">View Details</div>
+                                            <div class="action-item">Export Data</div>
                                         </div>
                                     </div>
                                 </div>
@@ -173,6 +167,13 @@
             </div>
         </div>
     </main>
+
+    <router-link to="/chatbot" class="floating-chatbot">
+        <i class="fas fa-robot"></i>
+        <div class="chatbot-tooltip">
+            Asisten Chatbot AI
+        </div>
+    </router-link>
 </template>
 
 <script setup>
@@ -183,8 +184,10 @@ import { ref, reactive, onMounted, onUnmounted } from "vue";
 const mockupData = reactive({
     temperature: 24.5,
     humidity: 59,
+    voltage: 220,
     power: 9.0,
-    uptime: 99.8,
+    doorStatus: 'Locked',
+    cameraStatus: 'Active',
 });
 
 const features = reactive([
@@ -218,12 +221,60 @@ const features = reactive([
     },
 ]);
 
-// DIUBAH: Menambahkan properti `screenClass` pada setiap objek screenshot
+// Screenshot dengan konten yang variatif sesuai judul
 const screenshots = reactive([
-    { label: "Dashboard", image: "/src/assets/images/demoApp.png", screenClass: "phone-screen" },
-    { label: "Monitoring", image: "/src/assets/images/demoApp.png", screenClass: "phone-screen2" },
-    { label: "Alerts", image: "/src/assets/images/demoApp.png", screenClass: "phone-screen3" },
-    { label: "Reports", image: "/src/assets/images/demoApp.png", screenClass: "phone-screen4" },
+    {
+        label: "Dashboard",
+        screenClass: "phone-screen",
+        content: {
+            title: "Dashboard Overview",
+            cards: [
+                { value: "24.5°C", label: "Temperature" },
+                { value: "59%", label: "Humidity" },
+                { value: "220V", label: "Voltage" },
+                { value: "9.0kW", label: "Power" }
+            ]
+        }
+    },
+    {
+        label: "Monitoring",
+        screenClass: "phone-screen2",
+        content: {
+            title: "Real-time Monitoring",
+            cards: [
+                { value: "Locked", label: "Door Status" },
+                { value: "Active", label: "Camera" },
+                { value: "Normal", label: "Security" },
+                { value: "Online", label: "Network" }
+            ]
+        }
+    },
+    {
+        label: "Alerts",
+        screenClass: "phone-screen3",
+        content: {
+            title: "Alert Management",
+            cards: [
+                { value: "3", label: "Active Alerts" },
+                { value: "12", label: "Today" },
+                { value: "High", label: "Priority" },
+                { value: "2 min", label: "Response" }
+            ]
+        }
+    },
+    {
+        label: "Reports",
+        screenClass: "phone-screen4",
+        content: {
+            title: "Analytics & Reports",
+            cards: [
+                { value: "99.8%", label: "Uptime" },
+                { value: "24/7", label: "Monitoring" },
+                { value: "15", label: "Reports" },
+                { value: "Export", label: "Available" }
+            ]
+        }
+    }
 ]);
 
 const notificationPulse = ref(false);
@@ -248,7 +299,6 @@ function updateMockupData() {
     mockupData.temperature = (20 + Math.random() * 5).toFixed(1);
     mockupData.humidity = Math.floor(50 + Math.random() * 10);
     mockupData.power = (7 + Math.random() * 2).toFixed(1);
-    mockupData.uptime = (98 + Math.random() * 1.9).toFixed(1);
 }
 
 function animateNotificationBadge() {
@@ -309,7 +359,6 @@ onUnmounted(() => {
     color: var(--dark);
 }
 
-/* Header & Nav */
 .header {
     background: var(--white);
     box-shadow: var(--shadow);
@@ -330,7 +379,7 @@ onUnmounted(() => {
 
 .nav-links {
     display: flex;
-    gap: 1rem;
+    gap: 2rem;
     align-items: center;
 }
 
@@ -341,13 +390,10 @@ onUnmounted(() => {
     transition: var(--transition);
     padding: 0.5rem 1rem;
     border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
 }
 
 .nav-link:hover,
-.nav-link.router-link-active {
+.router-link-exact-active {
     color: var(--primary);
     background: rgba(26, 115, 232, 0.1);
 }
@@ -460,41 +506,31 @@ onUnmounted(() => {
     border: 5px solid #333;
 }
 
-/* KELAS-KELAS INI SEKARANG DIGUNAKAN UNTUK SCREENSHOTS */
-.phone-screen {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 25px;
-    position: relative;
-    overflow: hidden;
-}
-
-.phone-screen2 {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #ff9a8b 0%, #ff6a88 100%);
-    border-radius: 25px;
-    position: relative;
-    overflow: hidden;
-}
-
-.phone-screen3 {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #2eefd0 0%, #1a92a7 100%);
-    border-radius: 25px;
-    position: relative;
-    overflow: hidden;
-}
-
+.phone-screen,
+.phone-screen2,
+.phone-screen3,
 .phone-screen4 {
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #96e6a1 0%, #297a39 100%);
     border-radius: 25px;
     position: relative;
     overflow: hidden;
+}
+
+.phone-screen {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.phone-screen2 {
+    background: linear-gradient(135deg, #ff9a8b 0%, #ff6a88 100%);
+}
+
+.phone-screen3 {
+    background: linear-gradient(135deg, #2eefd0 0%, #1a92a7 100%);
+}
+
+.phone-screen4 {
+    background: linear-gradient(135deg, #96e6a1 0%, #297a39 100%);
 }
 
 .screen-content {
@@ -791,6 +827,77 @@ onUnmounted(() => {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* Floating Chatbot */
+.floating-chatbot {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-hover);
+    transition: var(--transition);
+    z-index: 1000;
+    animation: chatbot-float 3s ease-in-out infinite;
+}
+
+.floating-chatbot:hover {
+    transform: scale(1.1);
+    box-shadow: 0 10px 30px rgba(26, 115, 232, 0.4);
+    animation-play-state: paused;
+}
+
+.chatbot-tooltip {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    background: var(--dark);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: var(--transition);
+    pointer-events: none;
+}
+
+.chatbot-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 20px;
+    border: 8px solid transparent;
+    border-top-color: var(--dark);
+}
+
+.floating-chatbot:hover .chatbot-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@keyframes chatbot-float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
     }
 }
 </style>

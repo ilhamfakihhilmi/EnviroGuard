@@ -71,7 +71,7 @@
             </p>
           </router-link>
 
-          <router-link to="/reports" class="feature-card ai-powered">
+          <router-link to="/laporan" class="feature-card ai-powered">
             <div class="ai-badge">Insightful</div>
             <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
             <h3 class="feature-title">Laporan & Analitik</h3>
@@ -101,44 +101,7 @@
           </router-link>
         </div>
 
-        <div class="ai-features-banner">
-          <h2 class="ai-features-title">🤖 Powered by Advanced AI & MCP Integration</h2>
-          <p class="ai-features-subtitle">Teknologi terdepan untuk monitoring dan optimasi data center yang cerdas</p>
 
-          <div class="ai-features-grid">
-            <div class="ai-feature-item">
-              <div class="ai-feature-icon">
-                <i class="fas fa-brain"></i>
-              </div>
-              <h4>Machine Learning Analytics</h4>
-              <p>Analisis prediktif berbasis ML untuk optimasi performa dan efisiensi energi</p>
-            </div>
-
-            <div class="ai-feature-item">
-              <div class="ai-feature-icon">
-                <i class="fas fa-network-wired"></i>
-              </div>
-              <h4>MCP Server Integration</h4>
-              <p>Koneksi real-time dengan Model Context Protocol untuk data processing yang canggih</p>
-            </div>
-
-            <div class="ai-feature-item">
-              <div class="ai-feature-icon">
-                <i class="fas fa-robot"></i>
-              </div>
-              <h4>Intelligent Automation</h4>
-              <p>Otomasi cerdas untuk maintenance, cooling, dan power management</p>
-            </div>
-
-            <div class="ai-feature-item">
-              <div class="ai-feature-icon">
-                <i class="fas fa-comments"></i>
-              </div>
-              <h4>Natural Language Interface</h4>
-              <p>Chatbot AI dengan pemahaman bahasa natural untuk interaksi yang intuitif</p>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
 

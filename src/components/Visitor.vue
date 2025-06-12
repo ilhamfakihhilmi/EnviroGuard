@@ -1,38 +1,28 @@
 <template>
     <header class="header">
         <nav class="nav">
-            <a>
+            <router-link to="/index">
                 <div>
                     <img src="/src/assets/images/logo.jpeg" alt="Logo" style="width: 135px; height: auto;" />
                 </div>
-            </a>
+            </router-link>
             <div class="nav-links">
                 <router-link to="/dashboard" class="nav-link">
-
                     Dashboard
                 </router-link>
                 <router-link to="/rack" class="nav-link">
-
                     Rak Server
                 </router-link>
                 <router-link to="/asset" class="nav-link">
-
                     Aset
                 </router-link>
                 <router-link to="/visitor" class="nav-link">
-
                     Pengunjung
                 </router-link>
-                <router-link to="/monitoring" class="nav-link">
-
-                    Monitoring
-                </router-link>
                 <router-link to="/laporan" class="nav-link">
-
                     Laporan
                 </router-link>
                 <router-link to="/mobile" class="nav-link">
-
                     Mobile
                 </router-link>
             </div>
@@ -71,6 +61,13 @@
                     <option value="Pending">Menunggu Approval</option>
                     <option value="Completed">Selesai</option>
                 </select>
+                <select class="filter-select" v-model="companyFilter">
+                    <option value="all">Semua Perusahaan</option>
+                    <option value="PT Teknologi Maju">PT Teknologi Maju</option>
+                    <option value="CV Digital Solutions">CV Digital Solutions</option>
+                    <option value="PT Infrastruktur Prima">PT Infrastruktur Prima</option>
+                    <option value="PT Maintenance Pro">PT Maintenance Pro</option>
+                </select>
                 <input type="date" class="filter-select" v-model="dateFilter">
             </div>
             <div>
@@ -93,6 +90,7 @@
                 <thead>
                     <tr>
                         <th>Pengunjung</th>
+                        <th>Perusahaan</th>
                         <th>Tujuan</th>
                         <th>Waktu Masuk</th>
                         <th>Waktu Keluar</th>
@@ -107,10 +105,10 @@
                                 <div class="visitor-avatar">{{ getInitials(visitor.name) }}</div>
                                 <div class="visitor-details">
                                     <div class="visitor-name">{{ visitor.name }}</div>
-                                    <div class="visitor-company">{{ visitor.company }}</div>
                                 </div>
                             </div>
                         </td>
+                        <td>{{ visitor.company }}</td>
                         <td>{{ visitor.purpose }}</td>
                         <td>{{ visitor.timeIn }}</td>
                         <td>{{ visitor.timeOut }}</td>
@@ -135,7 +133,7 @@
                         </td>
                     </tr>
                     <tr v-if="filteredVisitors.length === 0">
-                        <td colspan="6" style="text-align: center; color: var(--gray); padding: 2rem;">
+                        <td colspan="7" style="text-align: center; color: var(--gray); padding: 2rem;">
                             Tidak ada pengunjung yang cocok dengan kriteria filter.
                         </td>
                     </tr>
@@ -143,15 +141,23 @@
             </table>
         </div>
     </main>
+
+    <router-link to="/chatbot" class="floating-chatbot">
+        <i class="fas fa-robot"></i>
+        <div class="chatbot-tooltip">
+            Asisten Chatbot AI
+        </div>
+    </router-link>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
+import { ref, reactive, computed } from 'vue';
 
 // --- State Reaktif ---
 
 const searchTerm = ref('');
 const statusFilter = ref('all');
+const companyFilter = ref('all');
 const dateFilter = ref(new Date().toISOString().slice(0, 10)); // Default ke tanggal hari ini
 
 const stats = reactive({
@@ -163,15 +169,15 @@ const stats = reactive({
 
 // Data master pengunjung (di aplikasi nyata, ini dari API)
 const allVisitors = reactive([
-    { id: 1, name: 'Ade Maulana', company: 'PT. Tech Solutions', purpose: 'Maintenance Server', date: '2025-06-10', timeIn: '09:30', timeOut: '-', status: 'Active' },
-    { id: 2, name: 'Azis mujib', company: 'DataCorp Inc.', purpose: 'Audit Keamanan', date: '2025-06-10', timeIn: '-', timeOut: '-', status: 'Pending' },
-    { id: 3, name: 'Isna Ardani', company: 'Network Systems', purpose: 'Instalasi Equipment', date: '2025-06-10', timeIn: '08:00', timeOut: '11:30', status: 'Completed' },
-    { id: 4, name: 'Kiki Nabil', company: 'Cloud Services Ltd.', purpose: 'Konsultasi Teknis', date: '2025-06-10', timeIn: '10:15', timeOut: '-', status: 'Active' },
-    { id: 5, name: 'Satrio Natik', company: 'Security Audit Co.', purpose: 'Pemeriksaan Rutin', date: '2025-06-10', timeIn: '-', timeOut: '-', status: 'Pending' },
-    { id: 6, name: 'Anam Wobowo', company: 'Vendor AC', purpose: 'Perbaikan Pendingin', date: '2025-06-09', timeIn: '14:00', timeOut: '16:00', status: 'Completed' },
+    { id: 1, name: 'Ade Maulana', company: 'PT Teknologi Maju', purpose: 'Maintenance Server', date: '2025-06-12', timeIn: '09:30', timeOut: '-', status: 'Active' },
+    { id: 2, name: 'Azis Mujib', company: 'CV Digital Solutions', purpose: 'Audit Keamanan', date: '2025-06-12', timeIn: '-', timeOut: '-', status: 'Pending' },
+    { id: 3, name: 'Isna Ardani', company: 'PT Infrastruktur Prima', purpose: 'Instalasi Equipment', date: '2025-06-12', timeIn: '08:00', timeOut: '11:30', status: 'Completed' },
+    { id: 4, name: 'Kiki Nabil', company: 'PT Maintenance Pro', purpose: 'Konsultasi Teknis', date: '2025-06-12', timeIn: '10:15', timeOut: '-', status: 'Active' },
+    { id: 5, name: 'Satrio Natik', company: 'PT Teknologi Maju', purpose: 'Pemeriksaan Rutin', date: '2025-06-12', timeIn: '-', timeOut: '-', status: 'Pending' },
+    { id: 6, name: 'Anam Wobowo', company: 'CV Digital Solutions', purpose: 'Perbaikan Pendingin', date: '2025-06-11', timeIn: '14:00', timeOut: '16:00', status: 'Completed' },
+    { id: 7, name: 'Budi Santoso', company: 'PT Infrastruktur Prima', purpose: 'Inspeksi Rutin', date: '2025-06-12', timeIn: '13:00', timeOut: '-', status: 'Active' },
+    { id: 8, name: 'Sari Dewi', company: 'PT Maintenance Pro', purpose: 'Upgrade System', date: '2025-06-11', timeIn: '10:00', timeOut: '15:30', status: 'Completed' }
 ]);
-
-let statUpdateInterval = null;
 
 // --- Computed Properties ---
 
@@ -188,16 +194,20 @@ const filteredVisitors = computed(() => {
         const matchesStatus =
             statusFilter.value === 'all' || visitor.status === statusFilter.value;
 
+        const matchesCompany =
+            companyFilter.value === 'all' || visitor.company === companyFilter.value;
+
         const matchesDate =
             !dateFilter.value || visitor.date === dateFilter.value;
 
-        return matchesSearch && matchesStatus && matchesDate;
+        return matchesSearch && matchesStatus && matchesCompany && matchesDate;
     });
 });
 
 const formattedDate = computed(() => {
     if (!dateFilter.value) return 'Semua Tanggal';
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    // Tambahkan 'T00:00:00' untuk memastikan new Date() tidak terpengaruh timezone lokal secara keliru
     return new Date(dateFilter.value + 'T00:00:00').toLocaleDateString('id-ID', options);
 });
 
@@ -248,26 +258,6 @@ function viewVisitor(visitor) {
     alert(`Detail Pengunjung:\nNama: ${visitor.name}\nPerusahaan: ${visitor.company}\nTujuan: ${visitor.purpose}\nStatus: ${visitor.status}`);
 }
 
-// Simulasi pembaruan statistik
-function updateStats() {
-    Object.values(stats).forEach(stat => {
-        if (Math.random() > 0.8) { // 20% chance to update
-            const change = Math.random() > 0.5 ? 1 : -1;
-            stat.value = Math.max(0, stat.value + change);
-        }
-    });
-}
-
-// --- Lifecycle Hooks ---
-
-onMounted(() => {
-    statUpdateInterval = setInterval(updateStats, 5000);
-});
-
-onUnmounted(() => {
-    clearInterval(statUpdateInterval);
-});
-
 </script>
 
 <style scoped>
@@ -312,7 +302,6 @@ onUnmounted(() => {
     top: 0;
     z-index: 1000;
     flex-shrink: 0;
-    /* Mencegah header menyusut */
 }
 
 .nav {
@@ -332,18 +321,6 @@ onUnmounted(() => {
     font-weight: 800;
     color: var(--primary);
     text-decoration: none;
-}
-
-.logo-icon {
-    width: 40px;
-    height: 40px;
-    background: var(--gradient-primary);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.2rem;
 }
 
 .nav-links {
@@ -662,17 +639,11 @@ onUnmounted(() => {
     margin-bottom: 0.25rem;
 }
 
-.visitor-company {
-    font-size: 0.8rem;
-    color: var(--gray);
-}
-
 .status-badge {
     padding: 0.25rem 0.75rem;
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 500;
-    text-transform: capitalize;
 }
 
 .status-active,
@@ -796,6 +767,77 @@ onUnmounted(() => {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* Floating Chatbot */
+.floating-chatbot {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-hover);
+    transition: var(--transition);
+    z-index: 1000;
+    animation: float 3s ease-in-out infinite;
+}
+
+.floating-chatbot:hover {
+    transform: scale(1.1);
+    box-shadow: 0 10px 30px rgba(26, 115, 232, 0.4);
+    animation-play-state: paused;
+}
+
+.chatbot-tooltip {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    background: var(--dark);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: var(--transition);
+    pointer-events: none;
+}
+
+.chatbot-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 20px;
+    border: 8px solid transparent;
+    border-top-color: var(--dark);
+}
+
+.floating-chatbot:hover .chatbot-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
     }
 }
 </style>

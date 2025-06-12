@@ -1,38 +1,28 @@
 <template>
     <header class="header">
         <nav class="nav">
-            <a>
+            <router-link to="/index">
                 <div>
                     <img src="/src/assets/images/logo.jpeg" alt="Logo" style="width: 135px; height: auto;" />
                 </div>
-            </a>
+            </router-link>
             <div class="nav-links">
                 <router-link to="/dashboard" class="nav-link">
-
                     Dashboard
                 </router-link>
                 <router-link to="/rack" class="nav-link">
-
                     Rak Server
                 </router-link>
                 <router-link to="/asset" class="nav-link">
-
                     Aset
                 </router-link>
                 <router-link to="/visitor" class="nav-link">
-
                     Pengunjung
                 </router-link>
-                <router-link to="/monitoring" class="nav-link">
-
-                    Monitoring
-                </router-link>
                 <router-link to="/laporan" class="nav-link">
-
                     Laporan
                 </router-link>
                 <router-link to="/mobile" class="nav-link">
-
                     Mobile
                 </router-link>
             </div>
@@ -56,85 +46,114 @@
             </div>
         </div>
 
-        <div class="rack-container">
-            <div class="rack-visual">
-                <h3 class="rack-title">Rack Server AB-12</h3>
-                <p class="rack-location">Lokasi: PLN Pusat - Lantai 3 - Room 302</p>
+        <div class="racks-grid">
+            <div v-for="rack in racks" :key="rack.id" class="rack-container"
+                :class="{ 'selected': selectedRack && rack.id === selectedRack.id }" @click="selectRack(rack)">
+                <div class="rack-visual">
+                    <h3 class="rack-title">{{ rack.name }}</h3>
+                    <p class="rack-location">{{ rack.location }}</p>
 
-                <div class="rack-frame">
-                    <div class="rack-units">
-                        <div v-for="unit in rackUnits" :key="unit.number" :class="['rack-unit', unit.statusClass]"
-                            :title="unit.title" @click="showUnitDetails(unit)">
-                            {{ unit.displayName }}
+                    <div class="rack-alerts">
+                        <div v-for="alert in rack.alerts" :key="alert.id" :class="['alert-badge', alert.type]">
+                            <i :class="alert.icon"></i>
+                            {{ alert.message }}
+                        </div>
+                    </div>
+
+                    <div class="door-status">
+                        <div class="status-item">
+                            <i class="fas fa-door-open"></i>
+                            <span>Pintu: {{ rack.doorStatus }}</span>
+                            <div :class="['status-indicator', rack.doorStatus.toLowerCase()]"></div>
+                        </div>
+                    </div>
+
+                    <div class="surveillance-status">
+                        <div class="status-item">
+                            <i class="fas fa-video"></i>
+                            <span>Camera: {{ rack.cameraStatus }}</span>
+                            <div :class="['status-indicator', rack.cameraStatus.toLowerCase()]"></div>
+                        </div>
+                    </div>
+
+                    <div class="rack-frame">
+                        <div class="rack-units">
+                            <div v-for="unit in rack.units" :key="unit.number" :class="['rack-unit', unit.statusClass]"
+                                :title="unit.title" @click.stop="showUnitDetails(unit)">
+                                {{ unit.displayName }}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
+        <div v-if="selectedRack" class="rack-details-container">
             <div class="rack-details">
                 <div class="details-header">
-                    <h3 class="details-title">Detail Rak</h3>
+                    <h3 class="details-title">Detail Rak: {{ selectedRack.name }}</h3>
                 </div>
 
                 <div class="details-grid">
                     <div class="detail-card">
                         <div class="detail-label">Kapasitas</div>
                         <div class="detail-value">
-                            {{ rackStats.capacity.used }}U
+                            {{ selectedRack.stats.capacity.used }}U
                             <span class="detail-unit">
-                                ({{ rackStats.capacity.total }}U Terpakai - {{ rackStats.capacity.percentage }}%)
+                                ({{ selectedRack.stats.capacity.total }}U Terpakai - {{
+                                    selectedRack.stats.capacity.percentage }}%)
                             </span>
                         </div>
                     </div>
                     <div class="detail-card">
                         <div class="detail-label">Power</div>
                         <div class="detail-value">
-                            {{ rackStats.power.used.toFixed(1) }} kW
+                            {{ selectedRack.stats.power.used.toFixed(1) }} kW
                             <span class="detail-unit">
-                                / {{ rackStats.power.total }} kW ({{ rackStats.power.percentage }}%)
+                                / {{ selectedRack.stats.power.total }} kW ({{ selectedRack.stats.power.percentage }}%)
                             </span>
                         </div>
                     </div>
                     <div class="detail-card">
                         <div class="detail-label">Berat</div>
                         <div class="detail-value">
-                            {{ rackStats.weight.used }} kg
+                            {{ selectedRack.stats.weight.used }} kg
                             <span class="detail-unit">
-                                / {{ rackStats.weight.total }} kg
+                                / {{ selectedRack.stats.weight.total }} kg
                             </span>
                         </div>
                     </div>
                     <div class="detail-card">
                         <div class="detail-label">Suhu</div>
                         <div class="detail-value">
-                            {{ rackStats.temperature.value.toFixed(1) }}°C
+                            {{ selectedRack.stats.temperature.value.toFixed(1) }}°C
                             <span class="detail-unit">
-                                ({{ rackStats.temperature.status }})
+                                ({{ selectedRack.stats.temperature.status }})
                             </span>
                         </div>
                     </div>
                     <div class="detail-card">
                         <div class="detail-label">Koneksi Jaringan</div>
                         <div class="detail-value">
-                            {{ rackStats.network.speed }}
+                            {{ selectedRack.stats.network.speed }}
                             <span class="detail-unit">
-                                {{ rackStats.network.status }}
+                                {{ selectedRack.stats.network.status }}
                             </span>
                         </div>
                     </div>
                     <div class="detail-card">
                         <div class="detail-label">Kelembaban</div>
                         <div class="detail-value">
-                            {{ rackStats.humidity.value }}%
+                            {{ selectedRack.stats.humidity.value }}%
                             <span class="detail-unit">
-                                ({{ rackStats.humidity.status }})
+                                ({{ selectedRack.stats.humidity.status }})
                             </span>
                         </div>
                     </div>
                 </div>
 
                 <div class="equipment-section">
-                    <h4 class="section-title">Perangkat Terpasang</h4>
+                    <h4 class="section-title">Perangkat Terpasang di {{ selectedRack.name }}</h4>
                     <table class="equipment-table">
                         <thead>
                             <tr>
@@ -145,7 +164,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="device in installedDevices" :key="device.unit">
+                            <tr v-if="selectedRack.installedDevices.length === 0">
+                                <td colspan="4" style="text-align: center;">Tidak ada perangkat terpasang.</td>
+                            </tr>
+                            <tr v-for="device in selectedRack.installedDevices" :key="device.unit">
                                 <td>{{ device.unit }}</td>
                                 <td>{{ device.name }}</td>
                                 <td><span :class="['status-badge', `status-${device.status.toLowerCase()}`]">{{
@@ -158,34 +180,125 @@
             </div>
         </div>
     </main>
+
+    <router-link to="/chatbot" class="floating-chatbot">
+        <i class="fas fa-robot"></i>
+        <div class="chatbot-tooltip">
+            Asisten Chatbot AI
+        </div>
+    </router-link>
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, reactive } from 'vue';
-
-// --- State Reaktif (Data yang menggerakkan aplikasi) ---
+import { reactive, ref, onMounted } from 'vue';
 
 const totalUnits = 42;
 
-// Data perangkat yang terpasang. Di dunia nyata, ini akan datang dari API.
-const installedDevices = reactive([
-    { unit: 'U1-U2', start: 1, end: 2, name: 'Dell PowerEdge R740', status: 'Active', power: '450W' },
-    { unit: 'U3-U4', start: 3, end: 4, name: 'HP ProLiant DL380', status: 'Active', power: '380W' },
-    { unit: 'U5-U6', start: 5, end: 6, name: 'Cisco Nexus 9336C', status: 'Maintenance', power: '200W' },
-    { unit: 'U7-U10', start: 7, end: 10, name: 'NetApp AFF A400', status: 'Active', power: '650W' },
-    { unit: 'U11-U12', start: 11, end: 12, name: 'UPS Module', status: 'Critical', power: '100W' },
-    { unit: 'U15-U16', start: 15, end: 16, name: 'Server #5', status: 'Active', power: '300W' }
-]);
+// --- State Reaktif (Data yang menggerakkan aplikasi) ---
 
-// Statistik rak yang bisa diperbarui secara real-time
-const rackStats = reactive({
-    capacity: { used: 16, total: 42, percentage: 38 },
-    power: { used: 3.2, total: 5.0, percentage: 64 },
-    weight: { used: 320, total: 750 },
-    temperature: { value: 24.2, status: 'Normal' },
-    network: { speed: '10 Gbps', status: 'Redundan' },
-    humidity: { value: 45, status: 'Normal' }
-});
+// State baru untuk melacak rak yang dipilih
+const selectedRack = ref(null);
+
+// Data rak sekarang berisi 'installedDevices' dan 'stats' untuk setiap rak
+const racks = reactive([
+    {
+        id: 'rack-1',
+        name: 'Rack Server AB-12',
+        location: 'PLN Pusat - Lantai 3 - Room 302',
+        doorStatus: 'Terkunci',
+        cameraStatus: 'Aktif',
+        alerts: [
+            { id: 1, type: 'warning', icon: 'fas fa-exclamation-triangle', message: 'Suhu Tinggi' },
+            { id: 2, type: 'info', icon: 'fas fa-info-circle', message: 'Maintenance Terjadwal' }
+        ],
+        installedDevices: [
+            { unit: 'U38-U39', start: 38, end: 39, name: 'Dell PowerEdge R740', status: 'Active', power: '450W' },
+            { unit: 'U35-U36', start: 35, end: 36, name: 'Cisco Catalyst 9300', status: 'Maintenance', power: '150W' },
+            { unit: 'U28-U31', start: 28, end: 31, name: 'EMC Isilon H500', status: 'Active', power: '700W' },
+        ],
+        stats: {
+            capacity: { used: 8, total: 42, percentage: 19 },
+            power: { used: 1.3, total: 5.0, percentage: 26 },
+            weight: { used: 120, total: 750 },
+            temperature: { value: 28.5, status: 'Tinggi' },
+            network: { speed: '10 Gbps', status: 'Aktif' },
+            humidity: { value: 55, status: 'Normal' }
+        },
+        units: []
+    },
+    {
+        id: 'rack-2',
+        name: 'Rack Server CD-05',
+        location: 'PLN Pusat - Lantai 3 - Room 304',
+        doorStatus: 'Terbuka',
+        cameraStatus: 'Aktif',
+        alerts: [
+            { id: 3, type: 'success', icon: 'fas fa-check-circle', message: 'Semua Normal' }
+        ],
+        installedDevices: [
+            { unit: 'U40-U42', start: 40, end: 42, name: 'Juniper MX204', status: 'Active', power: '500W' },
+            { unit: 'U37-U38', start: 37, end: 38, name: 'HP ProLiant DL380', status: 'Active', power: '420W' },
+            { unit: 'U25-U26', start: 25, end: 26, name: 'PDU Vertikal', status: 'Active', power: '50W' },
+        ],
+        stats: {
+            capacity: { used: 7, total: 42, percentage: 17 },
+            power: { used: 0.97, total: 5.0, percentage: 19 },
+            weight: { used: 95, total: 750 },
+            temperature: { value: 22.1, status: 'Normal' },
+            network: { speed: '10 Gbps', status: 'Redundan' },
+            humidity: { value: 48, status: 'Normal' }
+        },
+        units: []
+    },
+    {
+        id: 'rack-3',
+        name: 'Rack Server EF-08',
+        location: 'PLN Pusat - Lantai 2 - Room 201',
+        doorStatus: 'Terkunci',
+        cameraStatus: 'Maintenance',
+        alerts: [
+            { id: 4, type: 'danger', icon: 'fas fa-times-circle', message: 'Power Critical' },
+            { id: 5, type: 'warning', icon: 'fas fa-video-slash', message: 'Camera Offline' }
+        ],
+        installedDevices: [
+            { unit: 'U39-U40', start: 39, end: 40, name: 'IBM Power System S922', status: 'Critical', power: '800W' },
+            { unit: 'U30-U31', start: 30, end: 31, name: 'Fortinet Firewall 100F', status: 'Active', power: '120W' },
+            { unit: 'U20-U22', start: 20, end: 22, name: 'Server #3 (Unknown)', status: 'Critical', power: '600W' },
+        ],
+        stats: {
+            capacity: { used: 7, total: 42, percentage: 17 },
+            power: { used: 4.5, total: 5.0, percentage: 90 },
+            weight: { used: 150, total: 750 },
+            temperature: { value: 25.0, status: 'Normal' },
+            network: { speed: '1 Gbps', status: 'Degraded' },
+            humidity: { value: 65, status: 'Tinggi' }
+        },
+        units: []
+    },
+    {
+        id: 'rack-4',
+        name: 'Rack Server GH-11',
+        location: 'PLN Pusat - Lantai 2 - Room 203',
+        doorStatus: 'Terkunci',
+        cameraStatus: 'Aktif',
+        alerts: [
+            { id: 6, type: 'info', icon: 'fas fa-tools', message: 'Upgrade Scheduled' }
+        ],
+        installedDevices: [
+            { unit: 'U35-U42', start: 35, end: 42, name: 'NetApp AFF A400', status: 'Active', power: '650W' },
+            { unit: 'U25-U28', start: 25, end: 28, name: 'Cisco Blade Server', status: 'Active', power: '1200W' },
+        ],
+        stats: {
+            capacity: { used: 12, total: 42, percentage: 29 },
+            power: { used: 1.85, total: 5.0, percentage: 37 },
+            weight: { used: 210, total: 750 },
+            temperature: { value: 23.4, status: 'Normal' },
+            network: { speed: '40 Gbps', status: 'Aktif' },
+            humidity: { value: 50, status: 'Normal' }
+        },
+        units: []
+    }
+]);
 
 const legendItems = [
     { label: 'Aktif', style: 'background: var(--gradient-primary)' },
@@ -194,13 +307,11 @@ const legendItems = [
     { label: 'Kosong', style: 'background: var(--light-gray); border: 1px dashed var(--gray)' },
 ];
 
-let updateInterval = null;
 
-// --- Computed Properties (Data turunan yang dihitung dari state) ---
+// --- Fungsi dan Metode ---
 
-// Membuat array unit rak secara dinamis.
-// Ini jauh lebih efisien daripada manipulasi DOM manual.
-const rackUnits = computed(() => {
+// Fungsi ini sekarang menerima daftar perangkat sebagai argumen
+function generateRackUnits(installedDevices) {
     const units = [];
     for (let i = totalUnits; i >= 1; i--) {
         const device = installedDevices.find(d => i >= d.start && i <= d.end);
@@ -216,8 +327,8 @@ const rackUnits = computed(() => {
                 number: i,
                 status: device.status,
                 statusClass: statusMap[device.status] || 'used',
-                displayName: device.name,
-                title: `Unit ${i} - ${device.name}`,
+                displayName: `U${i}: ${device.name}`,
+                title: `Unit ${i} - ${device.name} (${device.status})`,
                 deviceData: device,
             });
         } else {
@@ -232,40 +343,34 @@ const rackUnits = computed(() => {
         }
     }
     return units;
+}
+
+// Inisialisasi unit untuk setiap rak berdasarkan 'installedDevices' mereka sendiri
+racks.forEach(rack => {
+    rack.units = generateRackUnits(rack.installedDevices);
 });
 
-// --- Metode (Fungsi yang akan dipanggil oleh event) ---
+
+// Metode untuk memilih rak dan menampilkan detailnya
+function selectRack(rack) {
+    selectedRack.value = rack;
+}
 
 function showUnitDetails(unit) {
     const message = unit.deviceData
-        ? `Unit ${unit.number}: ${unit.deviceData.name}\nStatus: ${unit.status}`
+        ? `Unit ${unit.number}: ${unit.deviceData.name}\nStatus: ${unit.status}\nPower: ${unit.deviceData.power}`
         : `Unit ${unit.number}: Kosong\nTersedia untuk instalasi perangkat baru.`;
     alert(message);
 }
 
-// Simulasi pembaruan data real-time
-function updateRackStatus() {
-    // Langsung ubah data reaktif, Vue akan memperbarui tampilan.
-    rackStats.temperature.value = (Math.random() * 2 + 23.5);
 
-    const newPower = (Math.random() * 0.5 + 3.0);
-    rackStats.power.used = newPower;
-    rackStats.power.percentage = Math.round((newPower / rackStats.power.total) * 100);
-}
-
-
-// --- Lifecycle Hooks (Kode yang berjalan pada siklus hidup komponen) ---
-
+// --- Lifecycle Hooks ---
 onMounted(() => {
-    // Mulai interval pembaruan saat komponen dimuat
-    updateInterval = setInterval(updateRackStatus, 5000); // Dipercepat untuk demo
+    // Secara default, pilih rak pertama saat komponen dimuat
+    if (racks.length > 0) {
+        selectRack(racks[0]);
+    }
 });
-
-onUnmounted(() => {
-    // Hentikan interval saat komponen dihancurkan untuk mencegah kebocoran memori
-    clearInterval(updateInterval);
-});
-
 </script>
 
 <style scoped>
@@ -311,7 +416,6 @@ onUnmounted(() => {
     top: 0;
     z-index: 1000;
     flex-shrink: 0;
-    /* Mencegah header menyusut */
 }
 
 .nav {
@@ -393,21 +497,123 @@ onUnmounted(() => {
     font-size: 1.1rem;
 }
 
-/* Rack Container */
-.rack-container {
+/* Racks Grid */
+.racks-grid {
     display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
     margin-bottom: 2rem;
 }
 
-.rack-visual {
+.rack-container {
     background: var(--white);
     border-radius: var(--border-radius);
-    padding: 2rem;
     box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: var(--transition);
+    border: 3px solid transparent;
+    /* Tambahkan border transparan */
+    cursor: pointer;
+}
+
+.rack-container:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+}
+
+/* Style untuk rack yang terpilih */
+.rack-container.selected {
+    border-color: var(--primary);
+    box-shadow: var(--shadow-hover);
+}
+
+
+.rack-details-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.rack-visual {
+    padding: 1.5rem;
     position: relative;
     animation: fadeInUp 0.6s ease-out;
+}
+
+/* Alert Badges */
+.rack-alerts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.alert-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.alert-badge.success {
+    background: rgba(52, 168, 83, 0.1);
+    color: var(--secondary);
+}
+
+.alert-badge.warning {
+    background: rgba(251, 188, 4, 0.1);
+    color: var(--accent);
+}
+
+.alert-badge.danger {
+    background: rgba(234, 67, 53, 0.1);
+    color: var(--danger);
+}
+
+.alert-badge.info {
+    background: rgba(26, 115, 232, 0.1);
+    color: var(--primary);
+}
+
+/* Door and Camera Status */
+.door-status,
+.surveillance-status {
+    margin-bottom: 1rem;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--gray);
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-left: auto;
+}
+
+.status-indicator.terkunci {
+    background: var(--secondary);
+}
+
+.status-indicator.terbuka {
+    background: var(--danger);
+}
+
+.status-indicator.aktif {
+    background: var(--secondary);
+}
+
+.status-indicator.maintenance {
+    background: var(--accent);
 }
 
 .rack-title {
@@ -420,19 +626,17 @@ onUnmounted(() => {
 .rack-location {
     color: var(--gray);
     font-size: 0.9rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .rack-frame {
     background: linear-gradient(135deg, #e3f2fd, #f5f5f5);
     border-radius: 12px;
-    padding: 1rem;
+    padding: 0.75rem;
     border: 2px solid var(--light-gray);
     position: relative;
-    height: 600px;
-    /* Atur tinggi tetap */
+    height: 250px;
     overflow-y: auto;
-    /* Tambahkan scroll jika konten melebihi */
 }
 
 .rack-units {
@@ -442,7 +646,7 @@ onUnmounted(() => {
 }
 
 .rack-unit {
-    height: 15px;
+    height: 12px;
     border-radius: 4px;
     transition: var(--transition);
     cursor: pointer;
@@ -450,31 +654,30 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     padding: 0 0.5rem;
-    font-size: 0.6rem;
+    font-size: 0.5rem;
     font-weight: 500;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .rack-unit.empty {
     background: var(--light-gray);
     border: 1px dashed var(--gray);
+    color: var(--gray);
 }
 
 .rack-unit.used {
     background: var(--gradient-primary);
-    color: white;
 }
 
 .rack-unit.maintenance {
     background: var(--gradient-accent);
-    color: white;
 }
 
 .rack-unit.critical {
     background: var(--gradient-danger);
-    color: white;
 }
 
 .rack-unit:hover {
@@ -542,7 +745,6 @@ onUnmounted(() => {
     font-size: 0.8rem;
     color: var(--gray);
     display: block;
-    /* Agar span turun ke bawah */
 }
 
 /* Equipment Table */
@@ -700,6 +902,77 @@ onUnmounted(() => {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* Floating Chatbot */
+.floating-chatbot {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-hover);
+    transition: var(--transition);
+    z-index: 1000;
+    animation: float 3s ease-in-out infinite;
+}
+
+.floating-chatbot:hover {
+    transform: scale(1.1);
+    box-shadow: 0 10px 30px rgba(26, 115, 232, 0.4);
+    animation-play-state: paused;
+}
+
+.chatbot-tooltip {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    background: var(--dark);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: var(--transition);
+    pointer-events: none;
+}
+
+.chatbot-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 20px;
+    border: 8px solid transparent;
+    border-top-color: var(--dark);
+}
+
+.floating-chatbot:hover .chatbot-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
     }
 }
 </style>

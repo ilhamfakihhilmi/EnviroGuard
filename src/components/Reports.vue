@@ -1,38 +1,28 @@
 <template>
     <header class="header">
         <nav class="nav">
-            <a>
+            <router-link to="/index">
                 <div>
                     <img src="/src/assets/images/logo.jpeg" alt="Logo" style="width: 135px; height: auto;" />
                 </div>
-            </a>
+            </router-link>
             <div class="nav-links">
                 <router-link to="/dashboard" class="nav-link">
-
                     Dashboard
                 </router-link>
                 <router-link to="/rack" class="nav-link">
-
                     Rak Server
                 </router-link>
                 <router-link to="/asset" class="nav-link">
-
                     Aset
                 </router-link>
                 <router-link to="/visitor" class="nav-link">
-
                     Pengunjung
                 </router-link>
-                <router-link to="/monitoring" class="nav-link">
-
-                    Monitoring
-                </router-link>
                 <router-link to="/laporan" class="nav-link">
-
                     Laporan
                 </router-link>
                 <router-link to="/mobile" class="nav-link">
-
                     Mobile
                 </router-link>
             </div>
@@ -80,27 +70,26 @@
             </div>
         </div>
 
-        <div class="report-types">
-            <div v-for="(report, index) in reportTypes" :key="report.type"
-                :class="['report-card', report.color, { 'selected': selectedReportType === report.type }]"
-                :style="{ animationDelay: `${index * 0.1}s` }" @click="selectReportType(report.type)">
-                <div class="report-header">
-                    <div :class="['report-icon', report.color]">
-                        <i :class="report.icon"></i>
-                    </div>
+        <div class="report-cards">
+            <div class="report-card" v-for="report in reports" :key="report.id" @click="generateReport(report)">
+                <div class="report-icon">
+                    <i :class="report.icon"></i>
                 </div>
-                <div class="report-title">{{ report.title }}</div>
-                <div class="report-description">{{ report.description }}</div>
-                <div class="report-stats">
-                    <div v-for="stat in report.stats" :key="stat.label" class="stat-item">
-                        <div class="stat-value">{{ stat.value }}</div>
-                        <div class="stat-label">{{ stat.label }}</div>
+                <div class="report-content">
+                    <h3 class="report-title">{{ report.title }}</h3>
+                    <p class="report-description">{{ report.description }}</p>
+                    <div class="report-meta">
+                        <span class="report-frequency">{{ report.frequency }}</span>
+                        <span class="report-last-generated">{{ report.lastGenerated }}</span>
                     </div>
                 </div>
                 <div class="report-actions">
-                    <button class="action-btn" @click.stop="handleCardAction(report, 'generate')">Generate</button>
-                    <button class="action-btn secondary"
-                        @click.stop="handleCardAction(report, 'preview')">Preview</button>
+                    <button class="btn-icon" @click.stop="downloadReport(report)" title="Download">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="btn-icon" @click.stop="scheduleReport(report)" title="Schedule">
+                        <i class="fas fa-clock"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -127,7 +116,8 @@
                 <tbody>
                     <tr v-for="report in recentReports" :key="report.id">
                         <td class="report-name">{{ report.name }}</td>
-                        <td><span :class="['report-type', `type-${report.type.toLowerCase()}`]">{{ report.type }}</span>
+                        <td><span :class="['report-type', `type-${report.type.toLowerCase()}`]">{{ report.type
+                                }}</span>
                         </td>
                         <td>{{ report.period }}</td>
                         <td>{{ report.createdAt }}</td>
@@ -142,6 +132,13 @@
             </table>
         </div>
     </main>
+
+    <router-link to="/chatbot" class="floating-chatbot">
+        <i class="fas fa-robot"></i>
+        <div class="chatbot-tooltip">
+            Asisten Chatbot AI
+        </div>
+    </router-link>
 </template>
 
 <script setup>
@@ -156,13 +153,47 @@ const reportParams = reactive({
     format: 'pdf',
 });
 
-const selectedReportType = ref(null); // Menyimpan tipe laporan yang dipilih
-
-const reportTypes = reactive([
-    { type: 'performance', title: 'Laporan Performa', description: 'Analisis performa sistem, CPU usage, memory utilization, dan throughput network.', icon: 'fas fa-tachometer-alt', color: '', stats: [{ value: '98.5%', label: 'Uptime' }, { value: '67%', label: 'Avg CPU' }, { value: '8.2kW', label: 'Power' }] },
-    { type: 'environmental', title: 'Laporan Lingkungan', description: 'Monitoring suhu, kelembaban, kualitas udara, dan efisiensi pendinginan.', icon: 'fas fa-leaf', color: 'secondary', stats: [{ value: '22.5°C', label: 'Avg Temp' }, { value: '55%', label: 'Humidity' }, { value: '1.4', label: 'PUE' }] },
-    { type: 'security', title: 'Laporan Keamanan', description: 'Audit akses, log keamanan, deteksi intrusi, dan compliance report.', icon: 'fas fa-shield-alt', color: 'accent', stats: [{ value: '342', label: 'Visitors' }, { value: '0', label: 'Incidents' }, { value: '100%', label: 'Compliance' }] },
-    { type: 'maintenance', title: 'Laporan Maintenance', description: 'Jadwal maintenance, riwayat perbaikan, lifecycle aset, dan prediksi kebutuhan.', icon: 'fas fa-tools', color: 'warning', stats: [{ value: '12', label: 'Scheduled' }, { value: '3', label: 'Pending' }, { value: '95%', label: 'On Time' }] },
+const reports = reactive([
+    {
+        id: 1,
+        title: 'Laporan Power',
+        description: 'Analisis konsumsi daya, efisiensi energi, dan trend penggunaan listrik data center.',
+        icon: 'fas fa-bolt',
+        frequency: 'Harian',
+        lastGenerated: '12 Jun 2025'
+    },
+    {
+        id: 2,
+        title: 'Laporan Lingkungan',
+        description: 'Monitoring suhu, kelembaban, dan status pintu untuk keamanan lingkungan.',
+        icon: 'fas fa-leaf',
+        frequency: 'Real-time',
+        lastGenerated: '12 Jun 2025'
+    },
+    {
+        id: 3,
+        title: 'Laporan Pengunjung',
+        description: 'Data kunjungan, akses masuk-keluar, dan statistik pengunjung data center.',
+        icon: 'fas fa-users',
+        frequency: 'Mingguan',
+        lastGenerated: '09 Jun 2025'
+    },
+    {
+        id: 4,
+        title: 'Laporan Aset',
+        description: 'Inventori aset, status perangkat, dan lifecycle management equipment.',
+        icon: 'fas fa-server',
+        frequency: 'Bulanan',
+        lastGenerated: '01 Jun 2025'
+    },
+    {
+        id: 5,
+        title: 'Laporan Sentiment Analitik Trend & Prediktif',
+        description: 'Analisis prediktif untuk Power, Suhu, dan Humidity dengan machine learning.',
+        icon: 'fas fa-chart-line',
+        frequency: 'Mingguan',
+        lastGenerated: '08 Jun 2025'
+    }
 ]);
 
 const recentReports = reactive([
@@ -176,38 +207,16 @@ const recentReports = reactive([
 
 // --- Metode ---
 
-function selectReportType(type) {
-    selectedReportType.value = type;
-    console.log('Selected report type:', type);
+function generateReport(report) {
+    alert(`Generating ${report.title}...\n\nLaporan akan tersedia dalam beberapa menit dan akan muncul di tabel "Laporan Terbaru".`);
 }
 
-function generateReport() {
-    if (!reportParams.startDate || !reportParams.endDate) {
-        alert('Mohon pilih tanggal mulai dan akhir');
-        return;
-    }
-    if (!selectedReportType.value) {
-        alert('Mohon pilih tipe laporan terlebih dahulu dari salah satu kartu di atas.');
-        return;
-    }
-
-    const reportName = `${selectedReportType.value}-${reportParams.period}-${reportParams.startDate}-ke-${reportParams.endDate}.${reportParams.format}`;
-    alert(`Generating laporan: ${reportName}\n\nLaporan akan tersedia dalam beberapa menit dan akan muncul di tabel "Laporan Terbaru".`);
-
-    // Reset selection
-    selectedReportType.value = null;
-}
-
-function handleCardAction(report, action) {
-    if (action === 'generate') {
-        alert(`Generating ${report.title} dengan pengaturan default...`);
-    } else if (action === 'preview') {
-        alert(`Membuka preview untuk ${report.title}...`);
-    }
+function scheduleReport(report) {
+    alert(`Mengatur jadwal otomatis untuk ${report.title}...\n\nAnda dapat mengatur frekuensi dan waktu pengiriman laporan.`);
 }
 
 function downloadReport(report) {
-    alert(`Mengunduh laporan: ${report.name}`);
+    alert(`Mengunduh laporan: ${report.name || report.title}`);
 }
 
 function viewAllReports() {
@@ -245,7 +254,7 @@ function setDatesFromPeriod(period) {
             endDate = today;
             break;
     }
-    // Format tanggal ke YYYY-MM-DD
+    // Format tanggal ke yyyy-MM-dd
     reportParams.startDate = startDate.toISOString().split('T')[0];
     reportParams.endDate = endDate.toISOString().split('T')[0];
 }
@@ -310,7 +319,6 @@ onMounted(() => {
     top: 0;
     z-index: 1000;
     flex-shrink: 0;
-    /* Mencegah header menyusut */
 }
 
 .nav {
@@ -320,28 +328,6 @@ onMounted(() => {
     padding: 1rem 2rem;
     max-width: 1400px;
     margin: 0 auto;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: var(--primary);
-    text-decoration: none;
-}
-
-.logo-icon {
-    width: 40px;
-    height: 40px;
-    background: var(--gradient-primary);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.2rem;
 }
 
 .nav-links {
@@ -471,10 +457,9 @@ onMounted(() => {
     color: white;
 }
 
-/* Report Types Grid */
-.report-types {
+.report-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
 }
@@ -485,38 +470,10 @@ onMounted(() => {
     padding: 1.5rem;
     box-shadow: var(--shadow);
     transition: var(--transition);
-    position: relative;
-    overflow: hidden;
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
     cursor: pointer;
-    border: 2px solid transparent;
-}
-
-.report-card.selected {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-hover);
-    border-color: var(--primary);
-}
-
-.report-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--gradient-primary);
-}
-
-.report-card.secondary::before {
-    background: var(--gradient-secondary);
-}
-
-.report-card.accent::before {
-    background: var(--gradient-accent);
-}
-
-.report-card.warning::before {
-    background: var(--gradient-warning);
 }
 
 .report-card:hover {
@@ -524,14 +481,8 @@ onMounted(() => {
     box-shadow: var(--shadow-hover);
 }
 
-.report-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
 .report-icon {
+    flex-shrink: 0;
     width: 50px;
     height: 50px;
     border-radius: 12px;
@@ -543,20 +494,12 @@ onMounted(() => {
     background: var(--gradient-primary);
 }
 
-.report-icon.secondary {
-    background: var(--gradient-secondary);
-}
-
-.report-icon.accent {
-    background: var(--gradient-accent);
-}
-
-.report-icon.warning {
-    background: var(--gradient-warning);
+.report-content {
+    flex-grow: 1;
 }
 
 .report-title {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: var(--dark);
     margin-bottom: 0.5rem;
@@ -567,65 +510,39 @@ onMounted(() => {
     font-size: 0.9rem;
     line-height: 1.5;
     margin-bottom: 1rem;
-    min-height: 54px;
 }
 
-.report-stats {
+.report-meta {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    border-top: 1px solid var(--light-gray);
-    padding-top: 1rem;
-}
-
-.stat-item {
-    text-align: center;
-}
-
-.stat-value {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: var(--dark);
-}
-
-.stat-label {
     font-size: 0.8rem;
     color: var(--gray);
+    border-top: 1px solid var(--light-gray);
+    padding-top: 0.75rem;
 }
 
 .report-actions {
     display: flex;
+    flex-direction: column;
     gap: 0.5rem;
-    margin-top: auto;
 }
 
-.action-btn {
-    flex: 1;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    border: 2px solid var(--primary);
+.btn-icon {
     background: transparent;
-    color: var(--primary);
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-    font-size: 0.9rem;
-}
-
-.action-btn:hover {
-    background: var(--primary);
-    color: white;
-}
-
-.action-btn.secondary {
-    border-color: var(--gray);
+    border: none;
     color: var(--gray);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    transition: var(--transition);
 }
 
-.action-btn.secondary:hover {
-    background: var(--gray);
-    color: white;
+.btn-icon:hover {
+    background-color: var(--light-gray);
+    color: var(--primary);
 }
 
 /* Recent Reports */
@@ -733,7 +650,6 @@ onMounted(() => {
     }
 
     .nav-links {
-        gap: 0.5rem;
         flex-wrap: wrap;
         justify-content: center;
     }
@@ -747,10 +663,6 @@ onMounted(() => {
     }
 
     .report-controls {
-        grid-template-columns: 1fr;
-    }
-
-    .report-types {
         grid-template-columns: 1fr;
     }
 
@@ -773,7 +685,74 @@ onMounted(() => {
     }
 }
 
-.report-card {
-    animation: fadeInUp 0.6s ease-out;
+/* Floating Chatbot */
+.floating-chatbot {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-hover);
+    transition: var(--transition);
+    z-index: 1000;
+    animation: float 3s ease-in-out infinite;
+}
+
+.floating-chatbot:hover {
+    transform: scale(1.1);
+    box-shadow: 0 10px 30px rgba(26, 115, 232, 0.4);
+    animation-play-state: paused;
+}
+
+.chatbot-tooltip {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    background: var(--dark);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: var(--transition);
+    pointer-events: none;
+}
+
+.chatbot-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 20px;
+    border: 8px solid transparent;
+    border-top-color: var(--dark);
+}
+
+.floating-chatbot:hover .chatbot-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
 }
 </style>

@@ -1,38 +1,28 @@
 <template>
     <header class="header">
         <nav class="nav">
-            <a>
+            <router-link to="/index">
                 <div>
                     <img src="/src/assets/images/logo.jpeg" alt="Logo" style="width: 135px; height: auto;" />
                 </div>
-            </a>
+            </router-link>
             <div class="nav-links">
                 <router-link to="/dashboard" class="nav-link">
-
                     Dashboard
                 </router-link>
                 <router-link to="/rack" class="nav-link">
-
                     Rak Server
                 </router-link>
                 <router-link to="/asset" class="nav-link">
-
                     Aset
                 </router-link>
                 <router-link to="/visitor" class="nav-link">
-
                     Pengunjung
                 </router-link>
-                <router-link to="/monitoring" class="nav-link">
-
-                    Monitoring
-                </router-link>
                 <router-link to="/laporan" class="nav-link">
-
                     Laporan
                 </router-link>
                 <router-link to="/mobile" class="nav-link">
-
                     Mobile
                 </router-link>
             </div>
@@ -60,6 +50,13 @@
                     <option value="Switch">Switch</option>
                     <option value="Storage">Storage</option>
                     <option value="UPS">UPS</option>
+                </select>
+                <select class="filter-select" v-model="rackFilter">
+                    <option value="all">Semua Rak</option>
+                    <option value="AB-12">Rack AB-12</option>
+                    <option value="CD-05">Rack CD-05</option>
+                    <option value="EF-08">Rack EF-08</option>
+                    <option value="GH-11">Rack GH-11</option>
                 </select>
             </div>
             <div>
@@ -120,6 +117,13 @@
             <p>Tidak ada aset yang cocok dengan kriteria pencarian.</p>
         </div>
     </main>
+
+    <router-link to="/chatbot" class="floating-chatbot">
+        <i class="fas fa-robot"></i>
+        <div class="chatbot-tooltip">
+            Asisten Chatbot AI
+        </div>
+    </router-link>
 </template>
 
 <script setup>
@@ -131,50 +135,57 @@ import { ref, reactive, computed } from 'vue';
 const searchTerm = ref('');
 const statusFilter = ref('all');
 const typeFilter = ref('all');
+const rackFilter = ref('all');
 
 // Master data untuk semua aset. Di aplikasi nyata, ini akan diambil dari API.
 const allAssets = reactive([
     {
         id: 'AST-2025-0342', name: 'Dell PowerEdge R740', type: 'Server', status: 'Active',
-        location: 'PLN Pusat - Rack AB-12', lastUpdated: '18 Mar 2025',
+        location: 'PLN Pusat - Rack AB-12', rack: 'AB-12', lastUpdated: '18 Mar 2025',
         detail1: { label: 'Serial Number', value: 'DL740-2025-001' },
         detail2: { label: 'Warranty', value: 'Valid hingga 2028' }
     },
     {
         id: 'AST-2025-0343', name: 'Cisco Nexus 9336C', type: 'Switch', status: 'Active',
-        location: 'PLN Pusat - Rack AB-12', lastUpdated: '16 Mar 2025',
+        location: 'PLN Pusat - Rack AB-12', rack: 'AB-12', lastUpdated: '16 Mar 2025',
         detail1: { label: 'Serial Number', value: 'CS9336-2025-002' },
         detail2: { label: 'Ports', value: '36 x 40GbE' }
     },
     {
         id: 'AST-2025-0344', name: 'NetApp AFF A400', type: 'Storage', status: 'Active',
-        location: 'PLN Pusat - Rack AB-12', lastUpdated: '15 Mar 2025',
+        location: 'PLN Pusat - Rack AB-12', rack: 'AB-12', lastUpdated: '15 Mar 2025',
         detail1: { label: 'Kapasitas', value: '24TB SSD' },
         detail2: { label: 'RAID Level', value: 'RAID 6' }
     },
     {
         id: 'AST-2025-0345', name: 'APC Smart-UPS 3000', type: 'UPS', status: 'Maintenance',
-        location: 'PLN Pusat - Rack CD-05', lastUpdated: '10 Mar 2025',
+        location: 'PLN Pusat - Rack CD-05', rack: 'CD-05', lastUpdated: '10 Mar 2025',
         detail1: { label: 'Kapasitas', value: '3000VA / 2700W' },
         detail2: { label: 'Battery Status', value: 'Perlu Penggantian' }
     },
     {
         id: 'AST-2025-0346', name: 'HP ProLiant DL380', type: 'Server', status: 'Inactive',
-        location: 'Storage Room', lastUpdated: '05 Mar 2025',
+        location: 'Storage Room', rack: 'Storage', lastUpdated: '05 Mar 2025',
         detail1: { label: 'Status', value: 'Menunggu Deployment' },
         detail2: { label: 'Kondisi', value: 'Baru' }
     },
     {
         id: 'AST-2025-0347', name: 'Juniper EX4300', type: 'Switch', status: 'Active',
-        location: 'PLN Pusat - Rack EF-08', lastUpdated: '12 Mar 2025',
+        location: 'PLN Pusat - Rack EF-08', rack: 'EF-08', lastUpdated: '12 Mar 2025',
         detail1: { label: 'Ports', value: '48 x 1GbE + 4 x 10GbE' },
         detail2: { label: 'Firmware', value: 'v18.4R3.3' }
     },
+    {
+        id: 'AST-2025-0348', name: 'IBM Power System S922', type: 'Server', status: 'Active',
+        location: 'PLN Pusat - Rack GH-11', rack: 'GH-11', lastUpdated: '14 Mar 2025',
+        detail1: { label: 'CPU', value: 'POWER9 16-core' },
+        detail2: { label: 'Memory', value: '128GB DDR4' }
+    }
 ]);
 
 // --- Computed Property untuk Filtering ---
 // Ini adalah cara Vue yang elegan untuk menangani search & filter.
-// Tampilan akan otomatis update saat searchTerm, statusFilter, atau typeFilter berubah.
+// Tampilan akan otomatis update saat searchTerm, statusFilter, typeFilter, atau rackFilter berubah.
 const filteredAssets = computed(() => {
     return allAssets.filter(asset => {
         const search = searchTerm.value.toLowerCase();
@@ -193,7 +204,11 @@ const filteredAssets = computed(() => {
         const matchesType =
             typeFilter.value === 'all' || asset.type === typeFilter.value;
 
-        return matchesSearch && matchesStatus && matchesType;
+        // Kondisi filter rak
+        const matchesRack =
+            rackFilter.value === 'all' || asset.rack === rackFilter.value;
+
+        return matchesSearch && matchesStatus && matchesType && matchesRack;
     });
 });
 
@@ -664,6 +679,77 @@ function deleteAsset(assetId) {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* Floating Chatbot */
+.floating-chatbot {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-hover);
+    transition: var(--transition);
+    z-index: 1000;
+    animation: float 3s ease-in-out infinite;
+}
+
+.floating-chatbot:hover {
+    transform: scale(1.1);
+    box-shadow: 0 10px 30px rgba(26, 115, 232, 0.4);
+    animation-play-state: paused;
+}
+
+.chatbot-tooltip {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    background: var(--dark);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: var(--transition);
+    pointer-events: none;
+}
+
+.chatbot-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 20px;
+    border: 8px solid transparent;
+    border-top-color: var(--dark);
+}
+
+.floating-chatbot:hover .chatbot-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
     }
 }
 </style>

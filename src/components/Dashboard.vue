@@ -1,42 +1,18 @@
 <template>
-    <Dashboard v-if="showRakServer" />
-
     <header class="header">
         <nav class="nav">
-            <a>
+            <router-link to="/index">
                 <div>
                     <img src="/src/assets/images/logo.jpeg" alt="Logo" style="width: 135px; height: auto;" />
                 </div>
-            </a>
+            </router-link>
             <div class="nav-links">
-                <router-link to="/dashboard" class="nav-link">
-
-                    Dashboard
-                </router-link>
-                <router-link to="/rack" class="nav-link">
-
-                    Rak Server
-                </router-link>
-                <router-link to="/asset" class="nav-link">
-
-                    Aset
-                </router-link>
-                <router-link to="/visitor" class="nav-link">
-
-                    Pengunjung
-                </router-link>
-                <router-link to="/monitoring" class="nav-link">
-
-                    Monitoring
-                </router-link>
-                <router-link to="/laporan" class="nav-link">
-
-                    Laporan
-                </router-link>
-                <router-link to="/mobile" class="nav-link">
-
-                    Mobile
-                </router-link>
+                <router-link to="/dashboard" class="nav-link">Dashboard</router-link>
+                <router-link to="/rack" class="nav-link">Rak Server</router-link>
+                <router-link to="/asset" class="nav-link">Aset</router-link>
+                <router-link to="/visitor" class="nav-link">Pengunjung</router-link>
+                <router-link to="/laporan" class="nav-link">Laporan</router-link>
+                <router-link to="/mobile" class="nav-link">Mobile</router-link>
             </div>
         </nav>
     </header>
@@ -44,7 +20,7 @@
     <main class="main">
         <div class="page-header">
             <h1 class="page-title">EnviroGuard Dashboard</h1>
-            <p class="page-subtitle">Real-time monitoring dengan AI analytics dan MCP server integration</p>
+            <p class="page-subtitle">Real-time monitoring dengan AI analytics untuk client data center</p>
             <div class="ai-insights-banner">
                 <div class="ai-insight-item">
                     <i class="fas fa-brain"></i>
@@ -72,7 +48,6 @@
                 </div>
                 <div class="card-value">{{ totalRacks }}</div>
                 <div class="card-subtitle">Server racks aktif</div>
-                <div class="mcp-data">MCP: {{ mcpLastUpdate }}</div>
             </div>
 
             <div class="dashboard-card">
@@ -82,10 +57,10 @@
                         <i class="fas fa-chart-pie"></i>
                     </div>
                 </div>
-                <div class="card-value">{{ capacity }}%</div>
+                <div class="card-value">75%</div>
                 <div class="card-subtitle">Dari total kapasitas</div>
                 <div class="usage-bar">
-                    <div class="usage-fill" :style="{ width: capacity + '%', background: 'var(--gradient-secondary)' }">
+                    <div class="usage-fill" style="width: 75%; background: var(--gradient-secondary);">
                     </div>
                 </div>
             </div>
@@ -119,15 +94,15 @@
 
         <div class="status-grid">
             <div class="status-card status-active">
-                <div class="status-number">{{ statusActive }}</div>
-                <div class="status-label">Aktif</div>
+                <div class="status-number">24</div>
+                <div class="status-label">Device Aktif</div>
             </div>
             <div class="status-card status-maintenance">
-                <div class="status-number">{{ statusMaintenance }}</div>
+                <div class="status-number">3</div>
                 <div class="status-label">Maintenance</div>
             </div>
             <div class="status-card status-critical">
-                <div class="status-number">{{ statusCritical }}</div>
+                <div class="status-number">1</div>
                 <div class="status-label">Perlu Perhatian</div>
             </div>
         </div>
@@ -193,13 +168,18 @@
             </div>
         </transition-group>
     </div>
+
+    <router-link to="/chatbot" class="floating-chatbot">
+        <i class="fas fa-robot"></i>
+        <div class="chatbot-tooltip">
+            Asisten Chatbot AI
+        </div>
+    </router-link>
+
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import RakServer from './Rack.vue';
-
-// --- IMPOR UNTUK CHART.JS ---
 import { Line } from 'vue-chartjs';
 import {
     Chart as ChartJS,
@@ -213,7 +193,6 @@ import {
     Filler
 } from 'chart.js';
 
-// --- REGISTRASI KOMPONEN CHART.JS ---
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -225,7 +204,6 @@ ChartJS.register(
     Filler
 );
 
-// --- DATA & OPSI UNTUK CHART ---
 const chartData = {
     labels: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'],
     datasets: [{
@@ -283,59 +261,31 @@ const chartOptions = {
     },
 };
 
-
-// --- State Reaktif Dashboard ---
-const showRakServer = ref(false);
-
-const navigateToRakServer = () => {
-    showRakServer.value = true;
-};
-
-const totalRacks = ref(128);
-const capacity = ref(68);
-const power = ref(72);
+const totalRacks = ref(4);
+const capacity = ref(75);
+const power = ref(68);
 const visitors = ref(12);
-
-const statusActive = ref(512);
-const statusMaintenance = ref(23);
-const statusCritical = ref(7);
-
 const aiInsightEfficiency = ref('AI Prediction: 98.5% system efficiency next 24h');
 const aiInsightEnergy = ref('Energy optimization: 15% savings detected');
 const aiInsightAnomaly = ref('Anomaly detection: All systems normal');
-
-const mcpIsConnected = ref(true);
-const mcpLastUpdate = ref(`Last update ${new Date().toLocaleTimeString('id-ID')}`);
-
 const notifications = ref([]);
 let metricInterval = null;
 let learningInterval = null;
 
-// --- Logika (Methods) Dashboard ---
-
 function updateAIMetrics() {
-    capacity.value = Math.floor(Math.random() * 5) + 66; // 66-70%
-    power.value = Math.floor(Math.random() * 6) + 70; // 70-75%
-    visitors.value = Math.floor(Math.random() * 5) + 10; // 10-14
-
+    capacity.value = Math.floor(Math.random() * 5) + 66;
+    power.value = Math.floor(Math.random() * 6) + 70;
+    visitors.value = Math.floor(Math.random() * 5) + 10;
     const efficiencyPrediction = (95 + Math.random() * 4).toFixed(1);
     const confidence = (94 + Math.random() * 5).toFixed(1);
     aiInsightEfficiency.value = `AI Prediction: ${efficiencyPrediction}% system efficiency (${confidence}% confidence)`;
     aiInsightEnergy.value = `Energy optimization: ${(12 + Math.random() * 8).toFixed(1)}% savings detected`;
     aiInsightAnomaly.value = `Anomaly detection: ${Math.random() > 0.1 ? 'Minor anomaly in Rack-B' : 'All systems normal'}`;
-
-    updateMCPStatus();
-}
-
-function updateMCPStatus() {
-    mcpIsConnected.value = Math.random() > 0.05; // Simulasi uptime 95%
-    mcpLastUpdate.value = `Last update ${new Date().toLocaleTimeString('id-ID')}`;
 }
 
 function showAINotification(message) {
     const id = Date.now();
     notifications.value.push({ id, message });
-
     setTimeout(() => {
         notifications.value = notifications.value.filter(n => n.id !== id);
     }, 4000);
@@ -355,14 +305,11 @@ function simulateAILearning() {
     }
 }
 
-// --- Lifecycle Hooks ---
-
 onMounted(() => {
     updateAIMetrics();
     setTimeout(() => {
         showAINotification('AI system initialized successfully');
     }, 1500);
-
     metricInterval = setInterval(updateAIMetrics, 3000);
     learningInterval = setInterval(simulateAILearning, 15000);
 });
@@ -371,11 +318,10 @@ onUnmounted(() => {
     clearInterval(metricInterval);
     clearInterval(learningInterval);
 });
-
 </script>
 
 <style>
-/* --- CSS --- */
+/* SEMUA CSS DARI KODE ASLI ANDA ADA DI SINI */
 :root {
     --primary: #1a73e8;
     --primary-dark: #0d47a1;
@@ -459,7 +405,8 @@ body {
     border-radius: 8px;
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.router-link-exact-active {
     color: var(--primary);
     background: rgba(26, 115, 232, 0.1);
 }
@@ -486,6 +433,31 @@ body {
 .page-subtitle {
     color: var(--gray);
     font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.ai-insights-banner {
+    display: flex;
+    gap: 1.5rem;
+    background: linear-gradient(135deg, rgba(13, 112, 241, 0.05), rgba(52, 168, 83, 0.315));
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--light-gray);
+    flex-wrap: wrap;
+}
+
+.ai-insight-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--dark);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.ai-insight-item i {
+    color: var(--primary);
+    font-size: 1.2rem;
 }
 
 .dashboard-grid {
@@ -754,6 +726,79 @@ body {
     }
 }
 
+/* Floating Chatbot */
+.floating-chatbot {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-hover);
+    transition: var(--transition);
+    z-index: 1000;
+    animation: float 3s ease-in-out infinite;
+}
+
+.floating-chatbot:hover {
+    transform: scale(1.1);
+    box-shadow: 0 10px 30px rgba(26, 115, 232, 0.4);
+    animation-play-state: paused;
+    /* Optional: pause animation on hover */
+}
+
+.chatbot-tooltip {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    background: var(--dark);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: var(--transition);
+    pointer-events: none;
+}
+
+.chatbot-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 20px;
+    border: 8px solid transparent;
+    border-top-color: var(--dark);
+}
+
+.floating-chatbot:hover .chatbot-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+
 @media (max-width: 768px) {
     .nav {
         flex-direction: column;
@@ -773,6 +818,11 @@ body {
 
     .page-title {
         font-size: 2rem;
+    }
+
+    .ai-insights-banner {
+        flex-direction: column;
+        gap: 1rem;
     }
 
     .dashboard-grid {
