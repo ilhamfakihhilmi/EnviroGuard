@@ -19,7 +19,7 @@ import GalleryTeknis from "./components/GalleryApp.vue";
 // Definisikan semua rute aplikasi
 export const routes = [
   {
-    path: "/index",
+    path: "/",
     name: "Home",
     component: Home,
     meta: { title: "EnviroGuard - Home" },
