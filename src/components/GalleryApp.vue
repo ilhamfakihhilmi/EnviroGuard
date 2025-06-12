@@ -122,41 +122,47 @@ html, body {
 <style scoped>
 /* Style untuk header */
 .header {
-  background-color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 0 20px;
-  position: sticky;
-  top: 0;
-  z-index: 999;
+    background: var(--white);
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    flex-shrink: 0;
 }
 
 .nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1400px;
-  margin: 0 auto;
-  height: 70px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 .nav-links {
-  display: flex;
-  gap: 20px;
+    display: flex;
+    gap: 2rem;
+    align-items: center;
 }
 
 .nav-link {
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
-  padding: 8px 12px;
-  border-radius: 6px;
-  transition: background-color 0.3s, color 0.3s;
+    color: var(--gray);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
 }
 
 .nav-link:hover {
-  background-color: #f0f0f0;
+    color: var(--primary);
+    background: rgba(26, 115, 232, 0.1);
 }
 
+.nav-link.active {
+    color: var(--primary);
+    background: rgba(26, 115, 232, 0.1);
+}
 .router-link-exact-active {
   background-color: #e0e7ff;
   color: #4f46e5;
